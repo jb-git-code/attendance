@@ -1,0 +1,86 @@
+📌 Advanced Smart Features – AI Prompt Descriptions
+
+⸻
+
+✔ 1. Attendance Prediction
+
+Feature Name
+
+Attendance Prediction System
+
+Description
+
+The app must continuously predict the user’s future attendance percentage for each subject based on the current attendance data and upcoming classes.
+
+For every subject, the system should:
+	•	Calculate the current attendance percentage
+	•	Simulate the impact of:
+	•	Attending the next class
+	•	Missing the next class
+	•	Display a clear warning if missing upcoming classes will cause attendance to fall below the minimum required percentage (default: 75%)
+
+Functional Requirements
+	•	Prediction must update in real-time whenever attendance is marked
+	•	The prediction must be shown on the subject detail screen
+	•	If the predicted attendance falls below the threshold, the UI should display a warning message
+
+Example Output
+
+“If you miss the next class, your attendance will drop to 72%.”
+
+⸻
+
+✔ 2. Bunk Calculator
+
+Feature Name
+
+Smart Bunk Calculator
+
+Description
+
+The app must calculate and display how many future classes a user can safely miss (bunk) for a subject without falling below the required attendance percentage.
+
+For each subject, the system should:
+	•	Use total classes conducted and classes attended
+	•	Consider the minimum required attendance percentage (user-defined or default 75%)
+	•	Calculate the maximum number of classes that can be skipped safely
+
+Functional Requirements
+	•	Calculation must update instantly when attendance data changes
+	•	Result must be shown in a simple, readable format
+	•	The calculator must never allow bunking that drops attendance below the threshold
+
+Example Output
+
+“You can safely miss 2 more classes and still stay above 75% attendance.”
+
+⸻
+
+✔ 3. Weekly AI Attendance Summary
+
+Feature Name
+
+Weekly AI Attendance Summary Generator
+
+Description
+
+The app must generate an automatic, human-like weekly summary of the user’s attendance using attendance data stored locally.
+
+The summary should:
+	•	Run automatically every Sunday
+	•	Analyze all subjects for the past week
+	•	Identify:
+	•	Subjects where attendance goals were achieved
+	•	Subjects where attendance goals were missed
+	•	Generate a short, motivational summary message
+
+Functional Requirements
+	•	Summary must be generated locally (no internet dependency)
+	•	Message must be different each week based on performance
+	•	Summary must be sent as a local notification
+	•	Summary must also be visible inside the app
+
+Example Output
+
+“This week you attended 12 out of 15 classes. Great job in Mathematics 👍
+Physics needs attention next week ⚠ Keep going!”

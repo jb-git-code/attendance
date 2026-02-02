@@ -1,0 +1,83 @@
+Feature Name
+
+Semester End Date Attendance Constraint
+
+⸻
+
+Prompt / Description for AI
+
+The application must allow the user to set a semester finish date.
+All attendance calculations must be strictly limited to the period between the semester start date and the selected finish date.
+
+Once the semester finish date is reached, the system must stop counting any further classes for attendance calculations.
+
+⸻
+
+Functional Requirements
+	•	The user must be able to select a semester end date during setup or from settings.
+	•	For each subject:
+	•	The app must calculate the maximum possible number of classes until the semester end date using:
+	•	Classes per week
+	•	Remaining number of weeks
+	•	Attendance percentage must be calculated only using classes scheduled before or on the semester end date.
+	•	Classes after the finish date must:
+	•	Not be counted
+	•	Not trigger notifications
+	•	Not affect attendance prediction or bunk calculation
+
+⸻
+
+Attendance Calculation Rules
+	•	Let:
+	•	semesterStartDate
+	•	semesterEndDate
+	•	classesPerWeek
+	•	Remaining classes must be calculated based on the number of weeks between current date and semester end date.
+	•	Attendance prediction and bunk calculator must use remaining available classes only.
+
+⸻
+
+UI Requirements
+	•	Show the semester end date clearly in:
+	•	Settings screen
+	•	Subject detail screen
+	•	Display remaining days or weeks in the semester:
+“Semester ends in 5 weeks”
+
+⸻
+
+Example Scenario
+	•	Semester end date: 30 April 2026
+	•	Classes per week: 4
+	•	Remaining weeks: 5
+
+Total remaining classes = 20
+
+Example warning:
+
+“Only 20 classes are left this semester. Attend the next 3 classes to stay above 75%.”
+
+⸻
+
+Edge Case Handling
+	•	If the current date is after the semester end date:
+	•	Freeze attendance
+	•	Disable marking attendance
+	•	Show message:
+“Semester completed. Attendance is locked.”
+
+⸻
+
+AI-Readability Notes
+	•	Use deterministic date and time calculations
+	•	Do not rely on external APIs
+	•	All logic must work offline
+	•	Structure code so that date constraints apply globally to all attendance features
+
+⸻
+
+Why This Feature Matters
+	•	Makes attendance calculation realistic
+	•	Prevents infinite attendance assumptions
+	•	Improves accuracy of predictions and bunk calculations
+	•	Essential for semester-based academic systems
