@@ -267,9 +267,19 @@ class HomeScreen extends StatelessWidget {
     AttendanceProvider provider,
   ) {
     final stats = provider.getOverallStats();
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final percentFontSize = isSmallScreen
+        ? 36.0
+        : (screenWidth < 400 ? 42.0 : 48.0);
+    final titleFontSize = isSmallScreen ? 14.0 : 18.0;
+    final subjectIconSize = isSmallScreen ? 24.0 : 32.0;
+    final subjectCountFontSize = isSmallScreen ? 16.0 : 20.0;
+    final cardPadding = isSmallScreen ? 14.0 : 20.0;
+
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(cardPadding),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           colors: [AppTheme.primaryColor, Color(0xFF8B80FF)],
@@ -288,10 +298,10 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Overall Attendance',
             style: TextStyle(
-              fontSize: 18,
+              fontSize: titleFontSize,
               fontWeight: FontWeight.w500,
               color: Colors.white70,
             ),
@@ -300,44 +310,60 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${stats['percentage'].toStringAsFixed(1)}%',
-                    style: const TextStyle(
-                      fontSize: 48,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        '${stats['percentage'].toStringAsFixed(1)}%',
+                        style: TextStyle(
+                          fontSize: percentFontSize,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${stats['totalAttended']} of ${stats['totalClasses']} classes',
-                    style: const TextStyle(fontSize: 14, color: Colors.white70),
-                  ),
-                ],
+                    Text(
+                      '${stats['totalAttended']} of ${stats['totalClasses']} classes',
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 12.0 : 14.0,
+                        color: Colors.white70,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+              const SizedBox(width: 12),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(isSmallScreen ? 10.0 : 16.0),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
                   children: [
-                    const Icon(Icons.school, size: 32, color: Colors.white),
+                    Icon(
+                      Icons.school,
+                      size: subjectIconSize,
+                      color: Colors.white,
+                    ),
                     const SizedBox(height: 4),
                     Text(
                       '${stats['subjectCount']}',
-                      style: const TextStyle(
-                        fontSize: 20,
+                      style: TextStyle(
+                        fontSize: subjectCountFontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
-                    const Text(
+                    Text(
                       'Subjects',
-                      style: TextStyle(fontSize: 12, color: Colors.white70),
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 10.0 : 12.0,
+                        color: Colors.white70,
+                      ),
                     ),
                   ],
                 ),
@@ -364,6 +390,15 @@ class HomeScreen extends StatelessWidget {
     final todayRecord = provider.getTodayAttendance(subject.id);
     final canEdit = provider.canEditTodayAttendance(subject.id);
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 360;
+    final iconContainerSize = isSmallScreen ? 44.0 : 56.0;
+    final iconSize = isSmallScreen ? 22.0 : 28.0;
+    final circularProgressSize = isSmallScreen ? 44.0 : 56.0;
+    final circularStrokeWidth = isSmallScreen ? 4.0 : 6.0;
+    final cardPadding = isSmallScreen ? 12.0 : 16.0;
+    final nameFontSize = isSmallScreen ? 14.0 : 16.0;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: InkWell(
@@ -377,22 +412,22 @@ class HomeScreen extends StatelessWidget {
         },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(cardPadding),
           child: Row(
             children: [
               // Subject Icon with notification dot
               Stack(
                 children: [
                   Container(
-                    width: 56,
-                    height: 56,
+                    width: iconContainerSize,
+                    height: iconContainerSize,
                     decoration: BoxDecoration(
                       color: AppTheme.primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       SubjectIcons.getIcon(subject.icon),
-                      size: 28,
+                      size: iconSize,
                       color: AppTheme.primaryColor,
                     ),
                   ),
@@ -402,19 +437,19 @@ class HomeScreen extends StatelessWidget {
                       right: 0,
                       top: 0,
                       child: Container(
-                        width: 16,
-                        height: 16,
+                        width: isSmallScreen ? 14.0 : 16.0,
+                        height: isSmallScreen ? 14.0 : 16.0,
                         decoration: BoxDecoration(
                           color: AppTheme.errorColor,
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 2),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
                             '!',
                             style: TextStyle(
                               color: Colors.white,
-                              fontSize: 10,
+                              fontSize: isSmallScreen ? 8.0 : 10.0,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -423,7 +458,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                 ],
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: isSmallScreen ? 10.0 : 16.0),
               // Subject Info
               Expanded(
                 child: Column(
@@ -434,11 +469,13 @@ class HomeScreen extends StatelessWidget {
                         Expanded(
                           child: Text(
                             subject.name,
-                            style: const TextStyle(
-                              fontSize: 16,
+                            style: TextStyle(
+                              fontSize: nameFontSize,
                               fontWeight: FontWeight.bold,
                               color: AppTheme.textPrimary,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         // Show update button if class today and can edit
@@ -526,12 +563,12 @@ class HomeScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
+              SizedBox(width: isSmallScreen ? 6.0 : 8.0),
               // Attendance Percentage
               CircularProgressWithPercentage(
                 percentage: subject.attendancePercentage,
-                size: 56,
-                strokeWidth: 6,
+                size: circularProgressSize,
+                strokeWidth: circularStrokeWidth,
               ),
             ],
           ),

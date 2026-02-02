@@ -46,19 +46,41 @@ class AttendanceRecord extends HiveObject {
     this.statusUpdatedAt,
   });
 
-  /// Check if the record can still be edited (before midnight of the class date)
-  bool get canEdit {
-    final now = DateTime.now();
-    final midnight = DateTime(date.year, date.month, date.day, 23, 59, 59);
-    return now.isBefore(midnight) || now.isAtSameMomentAs(midnight);
+  /// The hour when a new attendance cycle starts (8 AM)
+  static const int cycleStartHour = 8;
+
+  /// Get the academic day for a given DateTime
+  /// Before 8 AM, it's still considered the previous day
+  static DateTime getAcademicDay(DateTime dateTime) {
+    if (dateTime.hour < cycleStartHour) {
+      // Before 8 AM, consider it the previous day
+      return DateTime(dateTime.year, dateTime.month, dateTime.day - 1);
+    }
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
 
-  /// Check if this record is for today
+  /// Check if the record can still be edited (before 8 AM of the next day)
+  bool get canEdit {
+    final now = DateTime.now();
+    // Editing allowed until 8 AM the next day
+    final nextDay8AM = DateTime(
+      date.year,
+      date.month,
+      date.day + 1,
+      cycleStartHour,
+    );
+    return now.isBefore(nextDay8AM);
+  }
+
+  /// Check if this record is for the current academic day
+  /// Academic day starts at 8 AM and ends at 8 AM the next day
   bool get isToday {
     final now = DateTime.now();
-    return date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day;
+    final currentAcademicDay = getAcademicDay(now);
+    final recordDay = DateTime(date.year, date.month, date.day);
+    return currentAcademicDay.year == recordDay.year &&
+        currentAcademicDay.month == recordDay.month &&
+        currentAcademicDay.day == recordDay.day;
   }
 
   AttendanceRecord copyWith({

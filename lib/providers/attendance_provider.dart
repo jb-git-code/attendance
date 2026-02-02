@@ -95,6 +95,7 @@ class AttendanceProvider extends ChangeNotifier {
   }
 
   /// Calculate remaining classes for a subject until semester end
+  /// Uses academic day (8 AM cycle) to determine if today's class is already counted
   int getRemainingClasses(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null || _semesterEndDate == null) return 0;
@@ -102,9 +103,17 @@ class AttendanceProvider extends ChangeNotifier {
     final now = DateTime.now();
     if (now.isAfter(_semesterEndDate!)) return 0;
 
+    // Use academic day to properly count remaining classes
+    final academicDay = AttendanceRecord.getAcademicDay(now);
+
     // Count remaining scheduled days until semester end
     int remainingClasses = 0;
-    DateTime current = DateTime(now.year, now.month, now.day);
+    // Start from tomorrow if after 8 AM, else from today (academic day + 1)
+    DateTime current = DateTime(
+      academicDay.year,
+      academicDay.month,
+      academicDay.day + 1,
+    );
     final endDate = DateTime(
       _semesterEndDate!.year,
       _semesterEndDate!.month,
@@ -322,15 +331,17 @@ class AttendanceProvider extends ChangeNotifier {
   }
 
   /// Get today's attendance record for a subject
+  /// Uses academic day (8 AM to 8 AM cycle)
   AttendanceRecord? getTodayAttendance(String subjectId) {
     final now = DateTime.now();
+    final academicDay = AttendanceRecord.getAcademicDay(now);
     try {
       return _attendanceRecords.firstWhere(
         (record) =>
             record.subjectId == subjectId &&
-            record.date.year == now.year &&
-            record.date.month == now.month &&
-            record.date.day == now.day,
+            record.date.year == academicDay.year &&
+            record.date.month == academicDay.month &&
+            record.date.day == academicDay.day,
       );
     } catch (e) {
       return null;

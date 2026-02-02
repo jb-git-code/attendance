@@ -51,10 +51,27 @@ class Subject extends HiveObject {
 
   bool get isGoalMet => attendancePercentage >= overallGoalPercentage;
 
-  /// Check if class is scheduled for today
+  /// The hour when a new attendance cycle starts (8 AM)
+  static const int cycleStartHour = 8;
+
+  /// Get the academic day for a given DateTime
+  /// Before 8 AM, it's still considered the previous day
+  static DateTime getAcademicDay(DateTime dateTime) {
+    if (dateTime.hour < cycleStartHour) {
+      // Before 8 AM, consider it the previous day
+      return DateTime(dateTime.year, dateTime.month, dateTime.day - 1);
+    }
+    return DateTime(dateTime.year, dateTime.month, dateTime.day);
+  }
+
+  /// Check if class is scheduled for the current academic day
+  /// Academic day starts at 8 AM on weekdays
   bool get hasClassToday {
-    final today = DateTime.now().weekday;
-    return today <= 5 && scheduledDays.contains(today);
+    final now = DateTime.now();
+    final academicDay = getAcademicDay(now);
+    final dayOfWeek = academicDay.weekday;
+    // Only weekdays (Mon-Fri) and must be in scheduled days
+    return dayOfWeek <= 5 && scheduledDays.contains(dayOfWeek);
   }
 
   Subject copyWith({
