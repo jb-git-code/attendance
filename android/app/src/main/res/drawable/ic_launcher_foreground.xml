@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Calendar/Clipboard base - white rounded rect -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:fillAlpha="0.95"
+        android:pathData="M27,36 L81,36 Q87,36 87,42 L87,84 Q87,90 81,90 L27,90 Q21,90 21,84 L21,42 Q21,36 27,36 Z"/>
+    
+    <!-- Calendar header -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M27,36 L81,36 Q87,36 87,42 L87,48 L21,48 L21,42 Q21,36 27,36 Z"/>
+    
+    <!-- Calendar rings -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M36,30 Q39,30 39,33 L39,42 Q39,45 36,45 Q33,45 33,42 L33,33 Q33,30 36,30 Z"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M72,30 Q75,30 75,33 L75,42 Q75,45 72,45 Q69,45 69,42 L69,33 Q69,30 72,30 Z"/>
+    
+    <!-- Success check circle -->
+    <path
+        android:fillColor="#10B981"
+        android:pathData="M54,68 m-18,0 a18,18 0 1,1 36,0 a18,18 0 1,1 -36,0"/>
+    
+    <!-- Check mark -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:strokeWidth="0"
+        android:pathData="M45,68 L51,74 L65,60"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    <path
+        android:fillColor="@android:color/transparent"
+        android:strokeWidth="4"
+        android:pathData="M45,68 L51,74 L65,60"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
+    
+    <!-- Calendar dots row -->
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M30,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M42,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M54,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M66,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
+    <path
+        android:fillColor="#E2E8F0"
+        android:pathData="M78,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
+</vector>
