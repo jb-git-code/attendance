@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/providers.dart';
@@ -14,37 +15,67 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(title: const Text('Profile')),
+      appBar: AppBar(
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: IconButton(
+          icon: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: const Icon(
+              Icons.arrow_back_ios_new_rounded,
+              size: 18,
+              color: AppTheme.primaryColor,
+            ),
+          ),
+          onPressed: () {
+            HapticFeedback.lightImpact();
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Consumer2<AuthProvider, AttendanceProvider>(
         builder: (context, authProvider, attendanceProvider, _) {
           final user = authProvider.user;
           final stats = attendanceProvider.getOverallStats();
 
           return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 // Profile Card
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: AppTheme.cardShadow,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
                         // Avatar
                         Container(
-                          width: 100,
-                          height: 100,
+                          width: 90,
+                          height: 90,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
+                            gradient: AppTheme.primaryGradient,
                             shape: BoxShape.circle,
+                            boxShadow: AppTheme.primaryShadow(0.25),
                           ),
                           child: Center(
                             child: Text(
                               _getInitials(user?.displayName ?? user?.email),
                               style: const TextStyle(
-                                fontSize: 36,
+                                fontSize: 32,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.primaryColor,
+                                color: Colors.white,
                               ),
                             ),
                           ),
@@ -54,18 +85,30 @@ class ProfileScreen extends StatelessWidget {
                         Text(
                           user?.displayName ?? 'User',
                           style: const TextStyle(
-                            fontSize: 24,
+                            fontSize: 22,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.textPrimary,
+                            letterSpacing: -0.3,
                           ),
                         ),
                         const SizedBox(height: 4),
                         // Email
-                        Text(
-                          user?.email ?? '',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppTheme.textSecondary,
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.backgroundColor,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            user?.email ?? '',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],
@@ -75,38 +118,60 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Stats Card
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: AppTheme.cardShadow,
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
-                          'Your Statistics',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: AppTheme.primaryColor.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: const Icon(
+                                Icons.bar_chart_rounded,
+                                color: AppTheme.primaryColor,
+                                size: 20,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text(
+                              'Your Statistics',
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimary,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             _buildStatItem(
-                              icon: Icons.school,
+                              icon: Icons.school_rounded,
                               value: '${stats['subjectCount']}',
                               label: 'Subjects',
                               color: AppTheme.primaryColor,
                             ),
                             _buildStatItem(
-                              icon: Icons.check_circle,
+                              icon: Icons.check_circle_rounded,
                               value: '${stats['totalAttended']}',
                               label: 'Attended',
                               color: AppTheme.successColor,
                             ),
                             _buildStatItem(
-                              icon: Icons.calendar_today,
+                              icon: Icons.calendar_today_rounded,
                               value: '${stats['totalClasses']}',
                               label: 'Total',
                               color: AppTheme.warningColor,
@@ -133,7 +198,12 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Settings Section
-                Card(
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.cardColor,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: AppTheme.cardShadow,
+                  ),
                   child: Column(
                     children: [
                       _buildSettingsTile(
@@ -141,15 +211,17 @@ class ProfileScreen extends StatelessWidget {
                         title: 'Notifications',
                         subtitle: 'Manage notification preferences',
                         onTap: () {
+                          HapticFeedback.lightImpact();
                           _showNotificationSettings(context);
                         },
                       ),
-                      const Divider(height: 1),
+                      const Divider(height: 1, indent: 70),
                       _buildSettingsTile(
-                        icon: Icons.info_outline,
+                        icon: Icons.info_outline_rounded,
                         title: 'About',
                         subtitle: 'App version and info',
                         onTap: () {
+                          HapticFeedback.lightImpact();
                           _showAboutDialog(context);
                         },
                       ),
@@ -161,13 +233,20 @@ class ProfileScreen extends StatelessWidget {
                 // Logout Button
                 SizedBox(
                   width: double.infinity,
+                  height: 52,
                   child: Consumer<AuthProvider>(
                     builder: (context, auth, _) {
-                      return LoadingButton(
-                        text: 'Logout',
-                        isLoading: auth.isLoading,
-                        isOutlined: true,
+                      return OutlinedButton.icon(
                         onPressed: () => _handleLogout(context),
+                        icon: const Icon(Icons.logout_rounded),
+                        label: const Text('Sign Out'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.errorColor,
+                          side: const BorderSide(color: AppTheme.errorColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
                       );
                     },
                   ),
@@ -251,41 +330,114 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showNotificationSettings(BuildContext context) {
+    HapticFeedback.lightImpact();
     showModalBottomSheet(
       context: context,
+      backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppTheme.radiusXl),
+        ),
       ),
       builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Notification Settings',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              SwitchListTile(
-                title: const Text('Daily Reminders'),
-                subtitle: const Text('Receive reminders on weekdays'),
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement notification toggle
-                },
-              ),
-              SwitchListTile(
-                title: const Text('Weekly Summary'),
-                subtitle: const Text('Get summary every Saturday'),
-                value: true,
-                onChanged: (value) {
-                  // TODO: Implement notification toggle
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppTheme.textSecondary.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        gradient: AppTheme.primaryGradient,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                      ),
+                      child: const Icon(
+                        Icons.notifications_rounded,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Notification Settings',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundColor,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  ),
+                  child: SwitchListTile(
+                    title: const Text(
+                      'Daily Reminders',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    subtitle: const Text(
+                      'Receive reminders on weekdays',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                    value: true,
+                    onChanged: (value) {
+                      HapticFeedback.selectionClick();
+                      // TODO: Implement notification toggle
+                    },
+                    activeColor: AppTheme.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundColor,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  ),
+                  child: SwitchListTile(
+                    title: const Text(
+                      'Weekly Summary',
+                      style: TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                    subtitle: const Text(
+                      'Get summary every Saturday',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.textSecondary,
+                      ),
+                    ),
+                    value: true,
+                    onChanged: (value) {
+                      HapticFeedback.selectionClick();
+                      // TODO: Implement notification toggle
+                    },
+                    activeColor: AppTheme.primaryColor,
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       },
@@ -293,25 +445,72 @@ class ProfileScreen extends StatelessWidget {
   }
 
   void _showAboutDialog(BuildContext context) {
+    HapticFeedback.lightImpact();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('About Smart Attendance'),
-        content: const Column(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                gradient: AppTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: const Icon(
+                Icons.info_outline_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'About',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Version: 1.0.0'),
-            SizedBox(height: 8),
-            Text(
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusFull),
+              ),
+              child: const Text(
+                'Version 1.0.0',
+                style: TextStyle(
+                  color: AppTheme.primaryColor,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
               'Smart Attendance Tracker is a privacy-focused, offline-first app to help you track and improve your class attendance.',
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                color: AppTheme.textSecondary,
+              ),
             ),
           ],
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('OK'),
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
+            style: TextButton.styleFrom(foregroundColor: AppTheme.primaryColor),
+            child: const Text('Got it'),
           ),
         ],
       ),
@@ -319,18 +518,48 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Future<void> _handleLogout(BuildContext context) async {
+    HapticFeedback.mediumImpact();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: const Icon(
+                Icons.logout_rounded,
+                color: AppTheme.errorColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Logout',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        content: const Text(
+          'Are you sure you want to logout? Your data will remain saved locally.',
+          style: TextStyle(color: AppTheme.textSecondary, height: 1.4),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.pop(context, true);
+            },
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
             child: const Text('Logout'),
           ),
@@ -366,7 +595,12 @@ class ProfileScreen extends StatelessWidget {
     final needsAttentionSubjects =
         summary['needsAttentionSubjects'] as List<String>;
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -381,7 +615,7 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Icon(
-                    Icons.auto_awesome,
+                    Icons.auto_awesome_rounded,
                     color: AppTheme.primaryColor,
                     size: 24,
                   ),
@@ -404,10 +638,24 @@ class ProfileScreen extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _buildSummaryStatItem(
-                      value: totalAttended.toString(),
-                      label: 'Attended',
-                      color: AppTheme.successColor,
+                    child: Column(
+                      children: [
+                        Text(
+                          totalAttended.toString(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.successColor,
+                          ),
+                        ),
+                        const Text(
+                          'Attended',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -416,10 +664,24 @@ class ProfileScreen extends StatelessWidget {
                     color: AppTheme.textSecondary.withOpacity(0.2),
                   ),
                   Expanded(
-                    child: _buildSummaryStatItem(
-                      value: (totalClasses - totalAttended).toString(),
-                      label: 'Missed',
-                      color: AppTheme.errorColor,
+                    child: Column(
+                      children: [
+                        Text(
+                          (totalClasses - totalAttended).toString(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.errorColor,
+                          ),
+                        ),
+                        const Text(
+                          'Missed',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   Container(
@@ -428,10 +690,24 @@ class ProfileScreen extends StatelessWidget {
                     color: AppTheme.textSecondary.withOpacity(0.2),
                   ),
                   Expanded(
-                    child: _buildSummaryStatItem(
-                      value: totalClasses.toString(),
-                      label: 'Total',
-                      color: AppTheme.primaryColor,
+                    child: Column(
+                      children: [
+                        Text(
+                          totalClasses.toString(),
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.primaryColor,
+                          ),
+                        ),
+                        const Text(
+                          'Total',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -556,29 +832,6 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSummaryStatItem({
-    required String value,
-    required String label,
-    required Color color,
-  }) {
-    return Column(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
-        ),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSemesterSettingsCard(
     BuildContext context,
     AttendanceProvider provider,
@@ -588,7 +841,12 @@ class ProfileScreen extends StatelessWidget {
     final hasEnded = provider.isSemesterEnded;
     final statusMessage = provider.getSemesterStatusMessage();
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

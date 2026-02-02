@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -33,23 +34,67 @@ class SubjectDetailScreen extends StatelessWidget {
         return Scaffold(
           backgroundColor: AppTheme.backgroundColor,
           appBar: AppBar(
-            title: Text(subject.name),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                boxShadow: AppTheme.cardShadow,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+                color: AppTheme.textPrimary,
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          AddEditSubjectScreen(subjectId: subjectId),
-                    ),
-                  );
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
                 },
               ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                onPressed: () => _showDeleteDialog(context, provider, subject),
+            ),
+            title: Text(
+              subject.name,
+              style: const TextStyle(
+                color: AppTheme.textPrimary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            actions: [
+              Container(
+                margin: const EdgeInsets.only(right: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  boxShadow: AppTheme.cardShadow,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.edit_rounded, size: 20),
+                  color: AppTheme.primaryColor,
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            AddEditSubjectScreen(subjectId: subjectId),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  boxShadow: AppTheme.cardShadow,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                  color: AppTheme.errorColor,
+                  onPressed: () =>
+                      _showDeleteDialog(context, provider, subject),
+                ),
               ),
             ],
           ),
@@ -101,7 +146,12 @@ class SubjectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildStatsCard(Subject subject, int weeklyAttended) {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -111,13 +161,14 @@ class SubjectDetailScreen extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: AppTheme.primaryColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+                gradient: AppTheme.primaryGradient,
+                borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                boxShadow: AppTheme.primaryShadow(0.2),
               ),
               child: Icon(
                 SubjectIcons.getIcon(subject.icon),
                 size: 40,
-                color: AppTheme.primaryColor,
+                color: Colors.white,
               ),
             ),
             const SizedBox(width: 20),
@@ -192,19 +243,41 @@ class SubjectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildAttendanceChart(Subject subject) {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Attendance Overview',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: const Icon(
+                    Icons.pie_chart_rounded,
+                    color: AppTheme.primaryColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Attendance Overview',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 20),
             SizedBox(
@@ -282,7 +355,12 @@ class SubjectDetailScreen extends StatelessWidget {
         ? (weeklyAttended / subject.weeklyGoal * 100).clamp(0, 100).toDouble()
         : 0.0;
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -291,13 +369,30 @@ class SubjectDetailScreen extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Weekly Progress',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppTheme.warningColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                      ),
+                      child: const Icon(
+                        Icons.trending_up_rounded,
+                        color: AppTheme.warningColor,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Weekly Progress',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(
@@ -308,7 +403,7 @@ class SubjectDetailScreen extends StatelessWidget {
                     color: weeklyProgress >= 100
                         ? AppTheme.successColor.withOpacity(0.1)
                         : AppTheme.warningColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusFull),
                   ),
                   child: Text(
                     weeklyProgress >= 100 ? 'Goal Met!' : 'In Progress',
@@ -345,19 +440,41 @@ class SubjectDetailScreen extends StatelessWidget {
   Widget _buildRecentRecordsCard(List<AttendanceRecord> records) {
     final recentRecords = records.take(5).toList();
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Recent Records',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.secondaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: const Icon(
+                    Icons.history_rounded,
+                    color: AppTheme.secondaryColor,
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Recent Records',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textPrimary,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 16),
             if (recentRecords.isEmpty)
@@ -424,12 +541,37 @@ class SubjectDetailScreen extends StatelessWidget {
     AttendanceProvider provider,
     Subject subject,
   ) {
+    HapticFeedback.mediumImpact();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Subject'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: const Icon(
+                Icons.delete_forever_rounded,
+                color: AppTheme.errorColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Delete Subject',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
         content: Text(
           'Are you sure you want to delete "${subject.name}"?\n\nThis will also delete all attendance records for this subject. This action cannot be undone.',
+          style: const TextStyle(color: AppTheme.textSecondary, height: 1.4),
         ),
         actions: [
           TextButton(
@@ -438,14 +580,29 @@ class SubjectDetailScreen extends StatelessWidget {
           ),
           TextButton(
             onPressed: () async {
+              HapticFeedback.mediumImpact();
               Navigator.pop(context); // Close dialog
               final success = await provider.deleteSubject(subjectId);
               if (success && context.mounted) {
                 Navigator.pop(context); // Go back to home
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Subject deleted successfully'),
+                  SnackBar(
+                    content: const Row(
+                      children: [
+                        Icon(
+                          Icons.check_circle_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text('Subject deleted successfully'),
+                      ],
+                    ),
                     backgroundColor: AppTheme.successColor,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                    ),
                   ),
                 );
               }
@@ -472,11 +629,11 @@ class SubjectDetailScreen extends StatelessWidget {
   IconData _getStatusIcon(ClassStatus status) {
     switch (status) {
       case ClassStatus.attended:
-        return Icons.check_circle;
+        return Icons.check_circle_rounded;
       case ClassStatus.missed:
-        return Icons.cancel;
+        return Icons.cancel_rounded;
       case ClassStatus.cancelled:
-        return Icons.event_busy;
+        return Icons.event_busy_rounded;
     }
   }
 
@@ -497,7 +654,12 @@ class SubjectDetailScreen extends StatelessWidget {
     final warning = provider.getAttendanceWarning(subjectId);
     final willDrop = provider.willDropBelowThreshold(subjectId);
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -505,12 +667,19 @@ class SubjectDetailScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.analytics_outlined,
-                  color: AppTheme.primaryColor,
-                  size: 24,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: const Icon(
+                    Icons.analytics_rounded,
+                    color: AppTheme.primaryColor,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 const Text(
                   'Attendance Prediction',
                   style: TextStyle(
@@ -533,14 +702,17 @@ class SubjectDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppTheme.successColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   border: Border.all(
                     color: AppTheme.successColor.withOpacity(0.3),
                   ),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.trending_up, color: AppTheme.successColor),
+                    const Icon(
+                      Icons.trending_up_rounded,
+                      color: AppTheme.successColor,
+                    ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -562,7 +734,7 @@ class SubjectDetailScreen extends StatelessWidget {
                   color:
                       (willDrop ? AppTheme.errorColor : AppTheme.warningColor)
                           .withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   border: Border.all(
                     color:
                         (willDrop ? AppTheme.errorColor : AppTheme.warningColor)
@@ -572,7 +744,7 @@ class SubjectDetailScreen extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.trending_down,
+                      Icons.trending_down_rounded,
                       color: willDrop
                           ? AppTheme.errorColor
                           : AppTheme.warningColor,
@@ -599,7 +771,7 @@ class SubjectDetailScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
                     color: AppTheme.errorColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                   ),
                   child: Row(
                     children: [
@@ -640,7 +812,12 @@ class SubjectDetailScreen extends StatelessWidget {
         subject.totalClasses > 0 &&
         subject.attendancePercentage < subject.overallGoalPercentage;
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -648,12 +825,19 @@ class SubjectDetailScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.calculate_outlined,
-                  color: AppTheme.primaryColor,
-                  size: 24,
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accentColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: const Icon(
+                    Icons.calculate_rounded,
+                    color: AppTheme.accentColor,
+                    size: 20,
+                  ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 12),
                 const Expanded(
                   child: Text(
                     'Bunk Calculator',
@@ -665,19 +849,32 @@ class SubjectDetailScreen extends StatelessWidget {
                   ),
                 ),
                 // Refresh button
-                IconButton(
-                  icon: const Icon(Icons.refresh),
-                  color: AppTheme.primaryColor,
-                  tooltip: 'Refresh calculations',
-                  onPressed: () {
-                    provider.refresh();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Bunk calculator refreshed'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: IconButton(
+                    icon: const Icon(Icons.refresh_rounded, size: 20),
+                    color: AppTheme.primaryColor,
+                    tooltip: 'Refresh calculations',
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      provider.refresh();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Bunk calculator refreshed'),
+                          duration: const Duration(seconds: 1),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppTheme.radiusSm,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -691,7 +888,7 @@ class SubjectDetailScreen extends StatelessWidget {
                     : isSafe
                     ? AppTheme.successColor.withOpacity(0.1)
                     : AppTheme.warningColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
               ),
               child: Column(
                 children: [
@@ -742,12 +939,16 @@ class SubjectDetailScreen extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.errorColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
         border: Border.all(color: AppTheme.errorColor.withOpacity(0.3)),
       ),
-      child: Row(
-        children: const [
-          Icon(Icons.lock_outline, color: AppTheme.errorColor, size: 28),
+      child: const Row(
+        children: [
+          Icon(
+            Icons.lock_outline_rounded,
+            color: AppTheme.errorColor,
+            size: 28,
+          ),
           SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -780,7 +981,12 @@ class SubjectDetailScreen extends StatelessWidget {
     final remainingWeeks = provider.getRemainingWeeks();
     final semesterWarning = provider.getSemesterAwareWarning(subjectId);
 
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        boxShadow: AppTheme.cardShadow,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -791,12 +997,12 @@ class SubjectDetailScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                   ),
                   child: const Icon(
-                    Icons.calendar_today,
-                    color: AppTheme.primaryColor,
+                    Icons.calendar_today_rounded,
+                    color: Colors.white,
                     size: 20,
                   ),
                 ),
@@ -832,7 +1038,7 @@ class SubjectDetailScreen extends StatelessWidget {
                   child: _buildSemesterStatItem(
                     value: '$remainingClasses',
                     label: 'Classes Left',
-                    icon: Icons.class_outlined,
+                    icon: Icons.class_rounded,
                     color: AppTheme.primaryColor,
                   ),
                 ),
@@ -840,7 +1046,7 @@ class SubjectDetailScreen extends StatelessWidget {
                   child: _buildSemesterStatItem(
                     value: '$remainingDays',
                     label: 'Days Left',
-                    icon: Icons.today,
+                    icon: Icons.today_rounded,
                     color: AppTheme.warningColor,
                   ),
                 ),
@@ -848,7 +1054,7 @@ class SubjectDetailScreen extends StatelessWidget {
                   child: _buildSemesterStatItem(
                     value: '$remainingWeeks',
                     label: 'Weeks Left',
-                    icon: Icons.date_range,
+                    icon: Icons.date_range_rounded,
                     color: AppTheme.secondaryColor,
                   ),
                 ),
@@ -861,7 +1067,7 @@ class SubjectDetailScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppTheme.warningColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 ),
                 child: Text(
                   semesterWarning,

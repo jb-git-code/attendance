@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/theme.dart';
@@ -34,6 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
   Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) return;
 
+    HapticFeedback.mediumImpact();
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final success = await authProvider.signUp(
       email: _emailController.text.trim(),
@@ -56,9 +58,21 @@ class _SignupScreenState extends State<SignupScreen> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppTheme.textPrimary),
-          onPressed: () => Navigator.pop(context),
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            boxShadow: AppTheme.cardShadow,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+            color: AppTheme.textPrimary,
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
+          ),
         ),
       ),
       body: SafeArea(
@@ -69,6 +83,23 @@ class _SignupScreenState extends State<SignupScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                // Logo
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.primaryGradient,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                    boxShadow: AppTheme.primaryShadow(0.3),
+                  ),
+                  child: const Icon(
+                    Icons.person_add_rounded,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(height: 24),
+
                 // Title
                 const Text(
                   'Create Account',
@@ -93,13 +124,18 @@ class _SignupScreenState extends State<SignupScreen> {
                         padding: const EdgeInsets.all(12),
                         margin: const EdgeInsets.only(bottom: 16),
                         decoration: BoxDecoration(
-                          color: AppTheme.errorColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: AppTheme.errorLight,
+                          borderRadius: BorderRadius.circular(
+                            AppTheme.radiusMd,
+                          ),
+                          border: Border.all(
+                            color: AppTheme.errorColor.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
                             const Icon(
-                              Icons.error_outline,
+                              Icons.error_outline_rounded,
                               color: AppTheme.errorColor,
                             ),
                             const SizedBox(width: 8),
@@ -112,9 +148,11 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.close, size: 18),
+                              icon: const Icon(Icons.close_rounded, size: 18),
                               onPressed: () => auth.clearError(),
                               color: AppTheme.errorColor,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
                             ),
                           ],
                         ),
@@ -129,7 +167,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   controller: _nameController,
                   label: 'Full Name',
                   hint: 'Enter your full name',
-                  prefixIcon: const Icon(Icons.person_outlined),
+                  prefixIcon: const Icon(Icons.person_outline_rounded),
+                  textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your name';
@@ -146,6 +185,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   hint: 'Enter your email',
                   keyboardType: TextInputType.emailAddress,
                   prefixIcon: const Icon(Icons.email_outlined),
+                  textInputAction: TextInputAction.next,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Please enter your email';
@@ -166,7 +206,8 @@ class _SignupScreenState extends State<SignupScreen> {
                   label: 'Password',
                   hint: 'Create a password',
                   obscureText: _obscurePassword,
-                  prefixIcon: const Icon(Icons.lock_outlined),
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  textInputAction: TextInputAction.next,
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword
@@ -174,6 +215,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () {
+                      HapticFeedback.selectionClick();
                       setState(() {
                         _obscurePassword = !_obscurePassword;
                       });
@@ -197,7 +239,9 @@ class _SignupScreenState extends State<SignupScreen> {
                   label: 'Confirm Password',
                   hint: 'Confirm your password',
                   obscureText: _obscureConfirmPassword,
-                  prefixIcon: const Icon(Icons.lock_outlined),
+                  prefixIcon: const Icon(Icons.lock_outline_rounded),
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _handleSignup(),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscureConfirmPassword
@@ -205,6 +249,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () {
+                      HapticFeedback.selectionClick();
                       setState(() {
                         _obscureConfirmPassword = !_obscureConfirmPassword;
                       });
@@ -229,6 +274,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       text: 'Create Account',
                       isLoading: auth.isLoading,
                       onPressed: _handleSignup,
+                      icon: Icons.arrow_forward_rounded,
                     );
                   },
                 ),
@@ -243,7 +289,10 @@ class _SignupScreenState extends State<SignupScreen> {
                       style: TextStyle(color: AppTheme.textSecondary),
                     ),
                     TextButton(
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.pop(context);
+                      },
                       child: const Text(
                         'Sign In',
                         style: TextStyle(

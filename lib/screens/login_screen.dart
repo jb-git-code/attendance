@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../utils/theme.dart';
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _handleLogin() async {
+    HapticFeedback.lightImpact();
     if (!_formKey.currentState!.validate()) return;
 
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -49,76 +51,97 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: AppTheme.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 48),
                 // Logo and Title
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(22),
                     decoration: BoxDecoration(
-                      color: AppTheme.primaryColor,
-                      borderRadius: BorderRadius.circular(20),
+                      gradient: AppTheme.primaryGradient,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: AppTheme.primaryShadow(0.3),
                     ),
                     child: const Icon(
-                      Icons.school,
-                      size: 60,
+                      Icons.school_rounded,
+                      size: 52,
                       color: Colors.white,
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
                 const Text(
                   'Welcome Back!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppTheme.textPrimary,
+                    letterSpacing: -0.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
                 const Text(
                   'Sign in to continue tracking your attendance',
-                  style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: AppTheme.textSecondary,
+                    height: 1.4,
+                  ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 48),
+                const SizedBox(height: 40),
 
                 // Error message
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
                     if (auth.error != null) {
                       return Container(
-                        padding: const EdgeInsets.all(12),
-                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(14),
+                        margin: const EdgeInsets.only(bottom: 20),
                         decoration: BoxDecoration(
-                          color: AppTheme.errorColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(12),
+                          color: AppTheme.errorLight,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: AppTheme.errorColor.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(
-                              Icons.error_outline,
-                              color: AppTheme.errorColor,
+                            Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: AppTheme.errorColor.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.error_outline_rounded,
+                                color: AppTheme.errorColor,
+                                size: 20,
+                              ),
                             ),
-                            const SizedBox(width: 8),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 auth.error!,
                                 style: const TextStyle(
                                   color: AppTheme.errorColor,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.close, size: 18),
+                              icon: const Icon(Icons.close_rounded, size: 18),
                               onPressed: () => auth.clearError(),
                               color: AppTheme.errorColor,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
                             ),
                           ],
                         ),
@@ -134,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: 'Email',
                   hint: 'Enter your email',
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   prefixIcon: const Icon(Icons.email_outlined),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -155,6 +179,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   label: 'Password',
                   hint: 'Enter your password',
                   obscureText: _obscurePassword,
+                  textInputAction: TextInputAction.done,
+                  onSubmitted: (_) => _handleLogin(),
                   prefixIcon: const Icon(Icons.lock_outlined),
                   suffixIcon: IconButton(
                     icon: Icon(
@@ -163,6 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           : Icons.visibility_off_outlined,
                     ),
                     onPressed: () {
+                      HapticFeedback.selectionClick();
                       setState(() {
                         _obscurePassword = !_obscurePassword;
                       });
@@ -178,19 +205,22 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // Login button
                 Consumer<AuthProvider>(
                   builder: (context, auth, _) {
-                    return LoadingButton(
-                      text: 'Sign In',
-                      isLoading: auth.isLoading,
-                      onPressed: _handleLogin,
+                    return SizedBox(
+                      height: 52,
+                      child: LoadingButton(
+                        text: 'Sign In',
+                        isLoading: auth.isLoading,
+                        onPressed: _handleLogin,
+                      ),
                     );
                   },
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 28),
 
                 // Sign up link
                 Row(
@@ -198,26 +228,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const Text(
                       "Don't have an account? ",
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 15,
+                      ),
                     ),
                     TextButton(
                       onPressed: () {
+                        HapticFeedback.lightImpact();
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const SignupScreen(),
                           ),
                         );
                       },
+                      style: TextButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                      ),
                       child: const Text(
                         'Sign Up',
                         style: TextStyle(
                           color: AppTheme.primaryColor,
                           fontWeight: FontWeight.bold,
+                          fontSize: 15,
                         ),
                       ),
                     ),
                   ],
                 ),
+                const SizedBox(height: 32),
               ],
             ),
           ),

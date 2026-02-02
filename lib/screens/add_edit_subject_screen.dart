@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../models/models.dart';
 import '../providers/attendance_provider.dart';
@@ -74,17 +75,31 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedDays.isEmpty) {
+      HapticFeedback.mediumImpact();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Please select at least one day for the class schedule',
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Please select at least one day for the class schedule',
+                ),
+              ),
+            ],
           ),
           backgroundColor: AppTheme.errorColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+          ),
         ),
       );
       return;
     }
 
+    HapticFeedback.mediumImpact();
     setState(() => _isLoading = true);
 
     final provider = Provider.of<AttendanceProvider>(context, listen: false);
@@ -117,24 +132,63 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
       Navigator.pop(context);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            isEditing
-                ? 'Subject updated successfully'
-                : 'Subject added successfully',
+          content: Row(
+            children: [
+              const Icon(
+                Icons.check_circle_rounded,
+                color: Colors.white,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                isEditing
+                    ? 'Subject updated successfully'
+                    : 'Subject added successfully',
+              ),
+            ],
           ),
           backgroundColor: AppTheme.successColor,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+          ),
         ),
       );
     }
   }
 
   Future<void> _handleDelete() async {
+    HapticFeedback.mediumImpact();
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Subject'),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.errorColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+              ),
+              child: const Icon(
+                Icons.delete_forever_rounded,
+                color: AppTheme.errorColor,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Text(
+              'Delete Subject',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
         content: Text(
           'Are you sure you want to delete "${_existingSubject?.name}"? This will also delete all attendance records for this subject.',
+          style: const TextStyle(color: AppTheme.textSecondary, height: 1.4),
         ),
         actions: [
           TextButton(
@@ -142,7 +196,10 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
             child: const Text('Cancel'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () {
+              HapticFeedback.mediumImpact();
+              Navigator.pop(context, true);
+            },
             style: TextButton.styleFrom(foregroundColor: AppTheme.errorColor),
             child: const Text('Delete'),
           ),
@@ -156,9 +213,19 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Subject deleted successfully'),
+          SnackBar(
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle_rounded, color: Colors.white, size: 20),
+                SizedBox(width: 8),
+                Text('Subject deleted successfully'),
+              ],
+            ),
             backgroundColor: AppTheme.successColor,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+            ),
           ),
         );
       }
@@ -170,12 +237,45 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
-        title: Text(isEditing ? 'Edit Subject' : 'Add Subject'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+            boxShadow: AppTheme.cardShadow,
+          ),
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
+            color: AppTheme.textPrimary,
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
+          ),
+        ),
+        title: Text(
+          isEditing ? 'Edit Subject' : 'Add Subject',
+          style: const TextStyle(
+            color: AppTheme.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         actions: [
           if (isEditing)
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: _handleDelete,
+            Container(
+              margin: const EdgeInsets.only(right: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                boxShadow: AppTheme.cardShadow,
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.delete_outline_rounded, size: 20),
+                color: AppTheme.errorColor,
+                onPressed: _handleDelete,
+              ),
             ),
         ],
       ),
@@ -187,19 +287,43 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Icon Selection
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  boxShadow: AppTheme.cardShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Select Icon',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.emoji_emotions_rounded,
+                              color: AppTheme.primaryColor,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Select Icon',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       GridView.builder(
@@ -216,18 +340,27 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                           final isSelected = index == _selectedIconIndex;
                           return InkWell(
                             onTap: () {
+                              HapticFeedback.selectionClick();
                               setState(() => _selectedIconIndex = index);
                             },
-                            borderRadius: BorderRadius.circular(8),
-                            child: Container(
+                            borderRadius: BorderRadius.circular(
+                              AppTheme.radiusSm,
+                            ),
+                            child: AnimatedContainer(
+                              duration: AppTheme.animFast,
                               decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? AppTheme.primaryGradient
+                                    : null,
                                 color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(8),
+                                    ? null
+                                    : AppTheme.backgroundColor,
+                                borderRadius: BorderRadius.circular(
+                                  AppTheme.radiusSm,
+                                ),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: Colors.grey.shade300),
+                                    : Border.all(color: AppTheme.dividerColor),
                               ),
                               child: Icon(
                                 SubjectIcons.icons[index],
@@ -247,26 +380,51 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
               const SizedBox(height: 16),
 
               // Subject Details
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  boxShadow: AppTheme.cardShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Subject Details',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppTheme.secondaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.book_rounded,
+                              color: AppTheme.secondaryColor,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Subject Details',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       CustomTextField(
                         controller: _nameController,
                         label: 'Subject Name',
                         hint: 'e.g., Mathematics',
-                        prefixIcon: const Icon(Icons.book),
+                        prefixIcon: const Icon(Icons.book_rounded),
+                        textInputAction: TextInputAction.next,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a subject name';
@@ -280,7 +438,8 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                         label: 'Classes Per Week',
                         hint: 'e.g., 5',
                         keyboardType: TextInputType.number,
-                        prefixIcon: const Icon(Icons.calendar_today),
+                        prefixIcon: const Icon(Icons.calendar_today_rounded),
+                        textInputAction: TextInputAction.next,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter classes per week';
@@ -299,27 +458,55 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
               const SizedBox(height: 16),
 
               // Class Schedule Days
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  boxShadow: AppTheme.cardShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Class Schedule',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Select the days when this class is scheduled',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppTheme.warningColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.schedule_rounded,
+                              color: AppTheme.warningColor,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Class Schedule',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textPrimary,
+                                ),
+                              ),
+                              Text(
+                                'Select the days when this class is scheduled',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: AppTheme.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       Row(
@@ -329,6 +516,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                           final isSelected = _selectedDays.contains(day);
                           return GestureDetector(
                             onTap: () {
+                              HapticFeedback.selectionClick();
                               setState(() {
                                 if (isSelected) {
                                   _selectedDays.remove(day);
@@ -337,17 +525,26 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                                 }
                               });
                             },
-                            child: Container(
+                            child: AnimatedContainer(
+                              duration: AppTheme.animFast,
                               width: 56,
                               height: 56,
                               decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? AppTheme.primaryGradient
+                                    : null,
                                 color: isSelected
-                                    ? AppTheme.primaryColor
-                                    : Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(12),
+                                    ? null
+                                    : AppTheme.backgroundColor,
+                                borderRadius: BorderRadius.circular(
+                                  AppTheme.radiusMd,
+                                ),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: Colors.grey.shade300),
+                                    : Border.all(color: AppTheme.dividerColor),
+                                boxShadow: isSelected
+                                    ? AppTheme.primaryShadow(0.2)
+                                    : null,
                               ),
                               child: Center(
                                 child: Text(
@@ -372,19 +569,43 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
               const SizedBox(height: 16),
 
               // Goals
-              Card(
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+                  boxShadow: AppTheme.cardShadow,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Attendance Goals',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                        ),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppTheme.successColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.flag_rounded,
+                              color: AppTheme.successColor,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Attendance Goals',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppTheme.textPrimary,
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 16),
                       CustomTextField(
@@ -392,7 +613,8 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                         label: 'Weekly Goal (classes)',
                         hint: 'e.g., 4',
                         keyboardType: TextInputType.number,
-                        prefixIcon: const Icon(Icons.flag),
+                        prefixIcon: const Icon(Icons.flag_rounded),
+                        textInputAction: TextInputAction.next,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter a weekly goal';
@@ -413,7 +635,9 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                         label: 'Overall Goal (%)',
                         hint: 'e.g., 75',
                         keyboardType: TextInputType.number,
-                        prefixIcon: const Icon(Icons.percent),
+                        prefixIcon: const Icon(Icons.percent_rounded),
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (_) => _handleSave(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter an overall goal';
@@ -436,7 +660,9 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                 text: isEditing ? 'Save Changes' : 'Add Subject',
                 isLoading: _isLoading,
                 onPressed: _handleSave,
+                icon: isEditing ? Icons.save_rounded : Icons.add_rounded,
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
