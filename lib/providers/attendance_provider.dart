@@ -3,7 +3,6 @@ import 'package:uuid/uuid.dart';
 import '../models/models.dart';
 import '../services/local_storage_service.dart';
 
-/// Provider for managing subjects and attendance
 class AttendanceProvider extends ChangeNotifier {
   final LocalStorageService _storageService;
   final Uuid _uuid = const Uuid();
@@ -13,7 +12,6 @@ class AttendanceProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  // Semester dates
   DateTime? _semesterStartDate;
   DateTime? _semesterEndDate;
 
@@ -24,7 +22,6 @@ class AttendanceProvider extends ChangeNotifier {
   DateTime? get semesterStartDate => _semesterStartDate;
   DateTime? get semesterEndDate => _semesterEndDate;
 
-  /// Check if semester has ended
   bool get isSemesterEnded {
     if (_semesterEndDate == null) return false;
     final now = DateTime.now();
@@ -39,7 +36,6 @@ class AttendanceProvider extends ChangeNotifier {
     return now.isAfter(endOfDay);
   }
 
-  /// Check if semester dates are set
   bool get hasSemesterDates =>
       _semesterStartDate != null && _semesterEndDate != null;
 
@@ -47,7 +43,6 @@ class AttendanceProvider extends ChangeNotifier {
     loadData();
   }
 
-  /// Load all data from local storage
   Future<void> loadData() async {
     _setLoading(true);
     try {
@@ -62,23 +57,18 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  // ============ Semester Operations ============
-
-  /// Set semester start date
   Future<void> setSemesterStartDate(DateTime date) async {
     await _storageService.setSemesterStartDate(date);
     _semesterStartDate = date;
     notifyListeners();
   }
 
-  /// Set semester end date
   Future<void> setSemesterEndDate(DateTime date) async {
     await _storageService.setSemesterEndDate(date);
     _semesterEndDate = date;
     notifyListeners();
   }
 
-  /// Get remaining weeks in semester
   int getRemainingWeeks() {
     if (_semesterEndDate == null) return 0;
     final now = DateTime.now();
@@ -86,7 +76,6 @@ class AttendanceProvider extends ChangeNotifier {
     return (_semesterEndDate!.difference(now).inDays / 7).ceil();
   }
 
-  /// Get remaining days in semester
   int getRemainingDays() {
     if (_semesterEndDate == null) return 0;
     final now = DateTime.now();
@@ -94,10 +83,6 @@ class AttendanceProvider extends ChangeNotifier {
     return _semesterEndDate!.difference(now).inDays;
   }
 
-  // ============ Backdated Attendance Logic ============
-
-  /// Calculate how many classes occurred between semester start and today
-  /// based on the scheduled days for a subject
   int calculateGapClasses(List<int> scheduledDays) {
     if (_semesterStartDate == null) return 0;
     if (scheduledDays.isEmpty) return 0;
@@ -105,17 +90,14 @@ class AttendanceProvider extends ChangeNotifier {
     final now = DateTime.now();
     final academicDay = AttendanceRecord.getAcademicDay(now);
 
-    // If semester hasn't started yet, no gap classes
     if (academicDay.isBefore(_semesterStartDate!)) return 0;
 
-    // If app install date equals semester start, no gap
     final semesterStartDay = DateTime(
       _semesterStartDate!.year,
       _semesterStartDate!.month,
       _semesterStartDate!.day,
     );
 
-    // Count classes from semester start until yesterday (today is handled by app)
     int gapClasses = 0;
     DateTime current = semesterStartDay;
     final yesterday = DateTime(
@@ -125,7 +107,6 @@ class AttendanceProvider extends ChangeNotifier {
     );
 
     while (current.isBefore(yesterday)) {
-      // Check if this day is a scheduled class day (weekdays only)
       if (current.weekday <= 5 && scheduledDays.contains(current.weekday)) {
         gapClasses++;
       }
@@ -135,8 +116,6 @@ class AttendanceProvider extends ChangeNotifier {
     return gapClasses;
   }
 
-  /// Check if backdated attendance initialization is needed
-  /// Returns true if semester has started before today
   bool needsBackdatedAttendance() {
     if (_semesterStartDate == null) return false;
     final now = DateTime.now();
@@ -149,7 +128,6 @@ class AttendanceProvider extends ChangeNotifier {
     return academicDay.isAfter(semesterStartDay);
   }
 
-  /// Get the number of days since semester started
   int getDaysSinceSemesterStart() {
     if (_semesterStartDate == null) return 0;
     final now = DateTime.now();
@@ -157,8 +135,6 @@ class AttendanceProvider extends ChangeNotifier {
     return academicDay.difference(_semesterStartDate!).inDays;
   }
 
-  /// Calculate remaining classes for a subject until semester end
-  /// Uses academic day (8 AM cycle) to determine if today's class is already counted
   int getRemainingClasses(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null || _semesterEndDate == null) return 0;
@@ -166,12 +142,9 @@ class AttendanceProvider extends ChangeNotifier {
     final now = DateTime.now();
     if (now.isAfter(_semesterEndDate!)) return 0;
 
-    // Use academic day to properly count remaining classes
     final academicDay = AttendanceRecord.getAcademicDay(now);
 
-    // Count remaining scheduled days until semester end
     int remainingClasses = 0;
-    // Start from tomorrow if after 8 AM, else from today (academic day + 1)
     DateTime current = DateTime(
       academicDay.year,
       academicDay.month,
@@ -193,7 +166,6 @@ class AttendanceProvider extends ChangeNotifier {
     return remainingClasses;
   }
 
-  /// Get semester status message
   String getSemesterStatusMessage() {
     if (_semesterEndDate == null) {
       return 'Semester end date not set';
@@ -214,11 +186,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  // ============ Subject Operations ============
-
-  /// Add a new subject
-  /// If backdatedAttendancePercentage is provided, initializes counters
-  /// based on classes that occurred since semester start
   Future<bool> addSubject({
     required String name,
     required String icon,
@@ -230,7 +197,6 @@ class AttendanceProvider extends ChangeNotifier {
   }) async {
     _clearError();
     try {
-      // Calculate initial values for backdated attendance
       int initialTotalClasses = 0;
       int initialAttendedClasses = 0;
 
@@ -240,7 +206,6 @@ class AttendanceProvider extends ChangeNotifier {
           initialTotalClasses = gapClasses;
           initialAttendedClasses =
               (gapClasses * backdatedAttendancePercentage / 100).round();
-          // Ensure attended doesn't exceed total
           if (initialAttendedClasses > initialTotalClasses) {
             initialAttendedClasses = initialTotalClasses;
           }
@@ -268,7 +233,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Update an existing subject
   Future<bool> updateSubject(Subject subject) async {
     _clearError();
     try {
@@ -285,7 +249,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Delete a subject
   Future<bool> deleteSubject(String id) async {
     _clearError();
     try {
@@ -300,7 +263,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Get a subject by ID
   Subject? getSubjectById(String id) {
     try {
       return _subjects.firstWhere((s) => s.id == id);
@@ -309,9 +271,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  // ============ Attendance Operations ============
-
-  /// Mark attendance for a subject with status
   Future<bool> markAttendanceWithStatus({
     required String subjectId,
     required ClassStatus status,
@@ -334,7 +293,6 @@ class AttendanceProvider extends ChangeNotifier {
       await _storageService.addAttendanceRecord(record);
       _attendanceRecords.add(record);
 
-      // Update subject counts based on status
       final subject = getSubjectById(subjectId);
       if (subject != null && status != ClassStatus.cancelled) {
         subject.totalClasses += 1;
@@ -353,7 +311,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Update attendance status for a record
   Future<bool> updateAttendanceStatus({
     required String recordId,
     required ClassStatus newStatus,
@@ -367,7 +324,6 @@ class AttendanceProvider extends ChangeNotifier {
 
       final record = _attendanceRecords[recordIndex];
 
-      // Check if we can still edit (before midnight)
       if (!record.canEdit) {
         _setError('Cannot edit attendance after midnight');
         return false;
@@ -377,7 +333,6 @@ class AttendanceProvider extends ChangeNotifier {
       final subject = getSubjectById(record.subjectId);
 
       if (subject != null) {
-        // Revert old status effects
         if (oldStatus != ClassStatus.cancelled) {
           subject.totalClasses -= 1;
           if (oldStatus == ClassStatus.attended) {
@@ -385,7 +340,6 @@ class AttendanceProvider extends ChangeNotifier {
           }
         }
 
-        // Apply new status effects
         if (newStatus != ClassStatus.cancelled) {
           subject.totalClasses += 1;
           if (newStatus == ClassStatus.attended) {
@@ -396,7 +350,6 @@ class AttendanceProvider extends ChangeNotifier {
         await _storageService.updateSubject(subject);
       }
 
-      // Update the record
       final updatedRecord = record.copyWith(
         status: newStatus,
         attended: newStatus == ClassStatus.attended,
@@ -415,8 +368,6 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Get today's attendance record for a subject
-  /// Uses academic day (8 AM to 8 AM cycle)
   AttendanceRecord? getTodayAttendance(String subjectId) {
     final now = DateTime.now();
     final academicDay = AttendanceRecord.getAcademicDay(now);
@@ -433,23 +384,18 @@ class AttendanceProvider extends ChangeNotifier {
     }
   }
 
-  /// Check if subject needs status update today
   bool needsStatusUpdate(String subjectId) {
-    // Don't show update prompt if semester has ended
     if (isSemesterEnded) return false;
 
     final subject = getSubjectById(subjectId);
     if (subject == null) return false;
 
-    // Check if today is a scheduled day
     if (!subject.hasClassToday) return false;
 
-    // Check if already marked today
     final todayRecord = getTodayAttendance(subjectId);
     return todayRecord == null;
   }
 
-  /// Check if today's attendance can still be edited
   bool canEditTodayAttendance(String subjectId) {
     if (isSemesterEnded) return false;
     final todayRecord = getTodayAttendance(subjectId);
@@ -457,7 +403,6 @@ class AttendanceProvider extends ChangeNotifier {
     return todayRecord.canEdit;
   }
 
-  /// Mark attendance for a subject (legacy method)
   Future<bool> markAttendance({
     required String subjectId,
     required bool attended,
@@ -470,7 +415,6 @@ class AttendanceProvider extends ChangeNotifier {
     );
   }
 
-  /// Get attendance records for a subject
   List<AttendanceRecord> getAttendanceBySubject(String subjectId) {
     return _attendanceRecords
         .where((record) => record.subjectId == subjectId)
@@ -478,7 +422,6 @@ class AttendanceProvider extends ChangeNotifier {
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
-  /// Get weekly attendance for a subject
   List<AttendanceRecord> getWeeklyAttendance(String subjectId) {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
@@ -497,21 +440,18 @@ class AttendanceProvider extends ChangeNotifier {
         .toList();
   }
 
-  /// Get weekly attendance count for a subject
   int getWeeklyAttendedCount(String subjectId) {
     return getWeeklyAttendance(
       subjectId,
     ).where((record) => record.attended).length;
   }
 
-  /// Check if weekly goal is met for a subject
   bool isWeeklyGoalMet(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return false;
     return getWeeklyAttendedCount(subjectId) >= subject.weeklyGoal;
   }
 
-  /// Get overall attendance statistics
   Map<String, dynamic> getOverallStats() {
     int totalClasses = 0;
     int totalAttended = 0;
@@ -533,7 +473,6 @@ class AttendanceProvider extends ChangeNotifier {
     };
   }
 
-  /// Clear all data (for logout)
   Future<void> clearAllData() async {
     await _storageService.clearAllData();
     _subjects.clear();
@@ -560,14 +499,10 @@ class AttendanceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Force refresh UI - useful after setting semester dates
   void refresh() {
     notifyListeners();
   }
 
-  // ============ Attendance Prediction ============
-
-  /// Calculate predicted attendance percentage if user attends next class
   double getPredictedAttendanceIfAttend(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return 0;
@@ -577,7 +512,6 @@ class AttendanceProvider extends ChangeNotifier {
     return (attendedAfter / totalAfter) * 100;
   }
 
-  /// Calculate predicted attendance percentage if user misses next class
   double getPredictedAttendanceIfMiss(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return 0;
@@ -587,7 +521,6 @@ class AttendanceProvider extends ChangeNotifier {
     return (attendedAfter / totalAfter) * 100;
   }
 
-  /// Check if missing next class will drop below threshold
   bool willDropBelowThreshold(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return false;
@@ -596,7 +529,6 @@ class AttendanceProvider extends ChangeNotifier {
     return predictedIfMiss < subject.overallGoalPercentage;
   }
 
-  /// Get warning message for attendance prediction
   String? getAttendanceWarning(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return null;
@@ -610,78 +542,48 @@ class AttendanceProvider extends ChangeNotifier {
     return null;
   }
 
-  // ============ Bunk Calculator ============
-
-  /// Calculate how many classes can be safely skipped
-  ///
-  /// Formula when remaining classes are known:
-  ///   Max Bunks = floor(A + R - (P/100) × (T + R))
-  ///
-  /// Formula when no remaining classes:
-  ///   Max Bunks = floor((100 × A) / P - T)
-  ///
-  /// Where:
-  ///   A = Classes already attended
-  ///   T = Total classes already conducted
-  ///   P = Minimum required attendance percentage (e.g., 75)
-  ///   R = Remaining classes in semester
-  ///
-  /// Result is clamped between 0 and R
   int calculateSafeBunks(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return 0;
 
-    final A = subject.attendedClasses; // Attended classes
-    final T = subject.totalClasses; // Total classes conducted
-    final P = subject.overallGoalPercentage; // Required percentage (e.g., 75)
+    final A = subject.attendedClasses;
+    final T = subject.totalClasses;
+    final P = subject.overallGoalPercentage;
 
     int maxBunks;
 
-    // If semester dates are set, use the formula with remaining classes
     if (hasSemesterDates) {
       final R = getRemainingClasses(subjectId);
 
-      // If no remaining classes, can't bunk
       if (R == 0) return 0;
 
-      // Formula: Max Bunks = floor(A + R - (P/100) × (T + R))
-      // This calculates: how many of the remaining classes can be skipped
-      // while maintaining >= P% attendance at semester end
       final targetFraction = P / 100;
       final totalAtEnd = T + R;
       final minAttendedNeeded = (targetFraction * totalAtEnd).ceil();
       final classesStillNeedToAttend = minAttendedNeeded - A;
 
       if (classesStillNeedToAttend <= 0) {
-        // Already attended enough, can skip all remaining
         maxBunks = R;
       } else if (classesStillNeedToAttend > R) {
-        // Can't reach target even if attending all remaining
         maxBunks = 0;
       } else {
-        // Can skip some classes
         maxBunks = R - classesStillNeedToAttend;
       }
 
-      // Clamp to valid range
       if (maxBunks < 0) maxBunks = 0;
       if (maxBunks > R) maxBunks = R;
     } else {
-      // No semester dates - need at least some classes conducted
       if (T == 0) return 0;
 
-      // Formula: Max Bunks = floor((100 × A) / P - T)
       final maxBunksDouble = (100 * A) / P - T;
       maxBunks = maxBunksDouble.floor();
 
-      // Clamp to minimum 0
       if (maxBunks < 0) maxBunks = 0;
     }
 
     return maxBunks;
   }
 
-  /// Get bunk calculator message (with semester awareness)
   String getBunkMessage(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return 'Subject not found';
@@ -695,10 +597,8 @@ class AttendanceProvider extends ChangeNotifier {
     final P = subject.overallGoalPercentage;
     final R = hasSemesterDates ? getRemainingClasses(subjectId) : 0;
 
-    // If no classes conducted yet
     if (T == 0) {
       if (hasSemesterDates && R > 0) {
-        // Calculate based on remaining classes only
         final totalAtEnd = R;
         final minNeeded = ((P / 100) * totalAtEnd).ceil();
         final safeBunks = R - minNeeded;
@@ -714,11 +614,9 @@ class AttendanceProvider extends ChangeNotifier {
 
     final safeBunks = calculateSafeBunks(subjectId);
 
-    // Calculate total at semester end and minimum needed
     final totalAtEnd = T + R;
     final minNeeded = ((P / 100) * totalAtEnd).ceil();
 
-    // Debug info
     String calculationDetail;
     if (hasSemesterDates && R > 0) {
       calculationDetail =
@@ -749,7 +647,6 @@ class AttendanceProvider extends ChangeNotifier {
     return message;
   }
 
-  /// Calculate how many classes needed to recover to target percentage
   int getClassesNeededToRecover(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return 0;
@@ -768,14 +665,12 @@ class AttendanceProvider extends ChangeNotifier {
       currentAttended++;
       total++;
 
-      // Safety limit
       if (classesNeeded > 100) break;
     }
 
     return classesNeeded;
   }
 
-  /// Get semester-aware prediction warning
   String? getSemesterAwareWarning(String subjectId) {
     final subject = getSubjectById(subjectId);
     if (subject == null) return null;
@@ -805,9 +700,6 @@ class AttendanceProvider extends ChangeNotifier {
     return null;
   }
 
-  // ============ Weekly Summary ============
-
-  /// Generate weekly AI summary
   Map<String, dynamic> generateWeeklySummary() {
     final now = DateTime.now();
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
@@ -846,7 +738,6 @@ class AttendanceProvider extends ChangeNotifier {
       }
     }
 
-    // Generate summary message
     String message = _generateSummaryMessage(
       totalClassesThisWeek,
       totalAttendedThisWeek,
