@@ -94,6 +94,69 @@ class AttendanceProvider extends ChangeNotifier {
     return _semesterEndDate!.difference(now).inDays;
   }
 
+  // ============ Backdated Attendance Logic ============
+
+  /// Calculate how many classes occurred between semester start and today
+  /// based on the scheduled days for a subject
+  int calculateGapClasses(List<int> scheduledDays) {
+    if (_semesterStartDate == null) return 0;
+    if (scheduledDays.isEmpty) return 0;
+
+    final now = DateTime.now();
+    final academicDay = AttendanceRecord.getAcademicDay(now);
+
+    // If semester hasn't started yet, no gap classes
+    if (academicDay.isBefore(_semesterStartDate!)) return 0;
+
+    // If app install date equals semester start, no gap
+    final semesterStartDay = DateTime(
+      _semesterStartDate!.year,
+      _semesterStartDate!.month,
+      _semesterStartDate!.day,
+    );
+
+    // Count classes from semester start until yesterday (today is handled by app)
+    int gapClasses = 0;
+    DateTime current = semesterStartDay;
+    final yesterday = DateTime(
+      academicDay.year,
+      academicDay.month,
+      academicDay.day,
+    );
+
+    while (current.isBefore(yesterday)) {
+      // Check if this day is a scheduled class day (weekdays only)
+      if (current.weekday <= 5 && scheduledDays.contains(current.weekday)) {
+        gapClasses++;
+      }
+      current = current.add(const Duration(days: 1));
+    }
+
+    return gapClasses;
+  }
+
+  /// Check if backdated attendance initialization is needed
+  /// Returns true if semester has started before today
+  bool needsBackdatedAttendance() {
+    if (_semesterStartDate == null) return false;
+    final now = DateTime.now();
+    final academicDay = AttendanceRecord.getAcademicDay(now);
+    final semesterStartDay = DateTime(
+      _semesterStartDate!.year,
+      _semesterStartDate!.month,
+      _semesterStartDate!.day,
+    );
+    return academicDay.isAfter(semesterStartDay);
+  }
+
+  /// Get the number of days since semester started
+  int getDaysSinceSemesterStart() {
+    if (_semesterStartDate == null) return 0;
+    final now = DateTime.now();
+    final academicDay = AttendanceRecord.getAcademicDay(now);
+    return academicDay.difference(_semesterStartDate!).inDays;
+  }
+
   /// Calculate remaining classes for a subject until semester end
   /// Uses academic day (8 AM cycle) to determine if today's class is already counted
   int getRemainingClasses(String subjectId) {
@@ -154,6 +217,8 @@ class AttendanceProvider extends ChangeNotifier {
   // ============ Subject Operations ============
 
   /// Add a new subject
+  /// If backdatedAttendancePercentage is provided, initializes counters
+  /// based on classes that occurred since semester start
   Future<bool> addSubject({
     required String name,
     required String icon,
@@ -161,15 +226,35 @@ class AttendanceProvider extends ChangeNotifier {
     required int weeklyGoal,
     double overallGoalPercentage = 75.0,
     List<int> scheduledDays = const [],
+    double? backdatedAttendancePercentage,
   }) async {
     _clearError();
     try {
+      // Calculate initial values for backdated attendance
+      int initialTotalClasses = 0;
+      int initialAttendedClasses = 0;
+
+      if (backdatedAttendancePercentage != null && scheduledDays.isNotEmpty) {
+        final gapClasses = calculateGapClasses(scheduledDays);
+        if (gapClasses > 0) {
+          initialTotalClasses = gapClasses;
+          initialAttendedClasses =
+              (gapClasses * backdatedAttendancePercentage / 100).round();
+          // Ensure attended doesn't exceed total
+          if (initialAttendedClasses > initialTotalClasses) {
+            initialAttendedClasses = initialTotalClasses;
+          }
+        }
+      }
+
       final subject = Subject(
         id: _uuid.v4(),
         name: name,
         icon: icon,
         classesPerWeek: classesPerWeek,
         weeklyGoal: weeklyGoal,
+        totalClasses: initialTotalClasses,
+        attendedClasses: initialAttendedClasses,
         overallGoalPercentage: overallGoalPercentage,
         scheduledDays: scheduledDays,
       );

@@ -1,0 +1,21 @@
+🥇 OPTION 1: Modern Academic (Best Overall Fit)
+
+🎯 Professional, minimal, timeless
+
+🎨 Palette
+	•	Background: #FAFAF7
+	•	Primary (Cards / AppBar): #2F3E46
+	•	Secondary (Cards light): #CAD2C5
+	•	Progress (Good): #52796F
+	•	Progress (Warning): #E9C46A
+	•	Text (Primary): #1B1F23
+
+💡 Why this works
+	•	Feels serious + premium
+	•	Perfect for attendance / productivity
+	•	Very easy on eyes
+
+📌 Use case in your UI
+	•	Top “Overall Attendance” card → #2F3E46
+	•	Subject cards → white / light secondary
+	•	Circular progress → green → yellow → red

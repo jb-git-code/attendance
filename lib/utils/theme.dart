@@ -1,66 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// App theme and color constants - Production Ready
+/// App theme and color constants - Modern Academic Theme
 class AppTheme {
-  // Primary brand colors
-  static const Color primaryColor = Color(0xFF6366F1); // Indigo
-  static const Color primaryLight = Color(0xFF818CF8);
-  static const Color primaryDark = Color(0xFF4F46E5);
+  // Primary brand colors - Modern Academic palette
+  static const Color primaryColor = Color(
+    0xFF2F3E46,
+  ); // Dark slate (Cards/AppBar)
+  static const Color primaryLight = Color(0xFF4A5B64);
+  static const Color primaryDark = Color(0xFF1B2830);
 
   // Secondary colors
-  static const Color secondaryColor = Color(0xFF0EA5E9); // Sky blue
-  static const Color accentColor = Color(0xFFF472B6); // Pink accent
+  static const Color secondaryColor = Color(
+    0xFFCAD2C5,
+  ); // Light sage (Cards light)
+  static const Color accentColor = Color(0xFF84A98C); // Medium sage
 
   // Semantic colors
-  static const Color successColor = Color(0xFF10B981); // Emerald
-  static const Color successLight = Color(0xFFD1FAE5);
-  static const Color warningColor = Color(0xFFF59E0B); // Amber
-  static const Color warningLight = Color(0xFFFEF3C7);
-  static const Color errorColor = Color(0xFFEF4444); // Red
-  static const Color errorLight = Color(0xFFFEE2E2);
-  static const Color infoColor = Color(0xFF3B82F6); // Blue
+  static const Color successColor = Color(
+    0xFF52796F,
+  ); // Progress (Good) - Teal green
+  static const Color successLight = Color(0xFFE0EBE8);
+  static const Color warningColor = Color(
+    0xFFE9C46A,
+  ); // Progress (Warning) - Golden yellow
+  static const Color warningLight = Color(0xFFFDF8E8);
+  static const Color errorColor = Color(0xFFBC4749); // Red for danger
+  static const Color errorLight = Color(0xFFFBEBEB);
+  static const Color infoColor = Color(0xFF6C8EAD); // Dusty blue
 
-  // Neutral colors
-  static const Color backgroundColor = Color(0xFFF8FAFC); // Slate 50
-  static const Color surfaceColor = Colors.white;
-  static const Color cardColor = Colors.white;
-  static const Color dividerColor = Color(0xFFE2E8F0); // Slate 200
+  // Neutral colors - Clean academic tones
+  static const Color backgroundColor = Color(0xFFFAFAF7); // Warm off-white
+  static const Color surfaceColor = Color(0xFFFFFFFF); // Pure white
+  static const Color cardColor = Color(0xFFFFFFFF);
+  static const Color dividerColor = Color(0xFFE5E8E4); // Light gray-green
 
-  // Text colors
-  static const Color textPrimary = Color(0xFF1E293B); // Slate 800
-  static const Color textSecondary = Color(0xFF64748B); // Slate 500
-  static const Color textTertiary = Color(0xFF94A3B8); // Slate 400
-  static const Color textOnPrimary = Colors.white;
+  // Text colors - Dark academic
+  static const Color textPrimary = Color(0xFF1B1F23); // Almost black
+  static const Color textSecondary = Color(0xFF4A5568); // Medium gray
+  static const Color textTertiary = Color(0xFF8A94A0); // Light gray
+  static const Color textOnPrimary = Color(0xFFFFFFFFF); // White
 
-  // Gradient presets
+  // Gradient presets - Modern Academic gradients
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primaryColor, Color(0xFF8B5CF6)], // Indigo to Violet
+    colors: [Color(0xFF2F3E46), Color(0xFF4A5B64)], // Dark slate gradient
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient successGradient = LinearGradient(
-    colors: [successColor, Color(0xFF34D399)],
+    colors: [Color(0xFF52796F), Color(0xFF6B9080)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient warningGradient = LinearGradient(
-    colors: [warningColor, Color(0xFFFBBF24)],
+    colors: [Color(0xFFE9C46A), Color(0xFFF0D485)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  // Shadows
+  // Premium accent gradients
+  static const LinearGradient creamGradient = LinearGradient(
+    colors: [Color(0xFFFAFAF7), Color(0xFFF0F2ED)],
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+  );
+
+  static const LinearGradient luxuryGradient = LinearGradient(
+    colors: [Color(0xFF2F3E46), Color(0xFF52796F)],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+
+  // Shadows - Cool tones
   static List<BoxShadow> get cardShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.04),
+      color: const Color(0xFF2F3E46).withOpacity(0.06),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.02),
+      color: const Color(0xFF2F3E46).withOpacity(0.03),
       blurRadius: 4,
       offset: const Offset(0, 1),
     ),
@@ -68,12 +89,12 @@ class AppTheme {
 
   static List<BoxShadow> get elevatedShadow => [
     BoxShadow(
-      color: Colors.black.withOpacity(0.08),
+      color: const Color(0xFF2F3E46).withOpacity(0.10),
       blurRadius: 16,
       offset: const Offset(0, 4),
     ),
     BoxShadow(
-      color: Colors.black.withOpacity(0.04),
+      color: const Color(0xFF2F3E46).withOpacity(0.05),
       blurRadius: 8,
       offset: const Offset(0, 2),
     ),

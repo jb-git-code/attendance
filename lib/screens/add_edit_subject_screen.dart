@@ -100,12 +100,11 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
     }
 
     HapticFeedback.mediumImpact();
-    setState(() => _isLoading = true);
-
     final provider = Provider.of<AttendanceProvider>(context, listen: false);
 
     bool success;
     if (isEditing && _existingSubject != null) {
+      setState(() => _isLoading = true);
       final updatedSubject = _existingSubject!.copyWith(
         name: _nameController.text.trim(),
         icon: _selectedIconIndex.toString(),
@@ -115,18 +114,37 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
         scheduledDays: _selectedDays.toList()..sort(),
       );
       success = await provider.updateSubject(updatedSubject);
+      setState(() => _isLoading = false);
     } else {
+      // For new subjects, check if backdated attendance is needed
+      final scheduledDays = _selectedDays.toList()..sort();
+      final gapClasses = provider.calculateGapClasses(scheduledDays);
+
+      double? backdatedPercentage;
+      if (gapClasses > 0 && provider.needsBackdatedAttendance()) {
+        // Show backdated attendance popup
+        backdatedPercentage = await _showBackdatedAttendanceDialog(
+          gapClasses,
+          provider.getDaysSinceSemesterStart(),
+        );
+        // If user cancelled the dialog, don't proceed
+        if (backdatedPercentage == null && mounted) {
+          return;
+        }
+      }
+
+      setState(() => _isLoading = true);
       success = await provider.addSubject(
         name: _nameController.text.trim(),
         icon: _selectedIconIndex.toString(),
         classesPerWeek: int.parse(_classesPerWeekController.text),
         weeklyGoal: int.parse(_weeklyGoalController.text),
         overallGoalPercentage: double.parse(_overallGoalController.text),
-        scheduledDays: _selectedDays.toList()..sort(),
+        scheduledDays: scheduledDays,
+        backdatedAttendancePercentage: backdatedPercentage,
       );
+      setState(() => _isLoading = false);
     }
-
-    setState(() => _isLoading = false);
 
     if (success && mounted) {
       Navigator.pop(context);
@@ -155,6 +173,230 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
         ),
       );
     }
+  }
+
+  /// Show dialog to get approximate attendance percentage for backdated period
+  Future<double?> _showBackdatedAttendanceDialog(
+    int gapClasses,
+    int daysSinceSemesterStart,
+  ) async {
+    double selectedPercentage = 75.0;
+    final percentageController = TextEditingController(text: '75');
+
+    return showDialog<double>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusLg),
+            ),
+            title: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  ),
+                  child: const Icon(
+                    Icons.history_rounded,
+                    color: AppTheme.primaryColor,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Text(
+                    'Past Attendance',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                      border: Border.all(
+                        color: AppTheme.primaryColor.withOpacity(0.2),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline_rounded,
+                          color: AppTheme.primaryColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'The semester started $daysSinceSemesterStart days ago. '
+                            'About $gapClasses classes have occurred for this subject.',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.textSecondary,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  const Text(
+                    'What percentage of classes did you attend approximately?',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w500,
+                      color: AppTheme.textPrimary,
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  // Slider for percentage
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SliderTheme(
+                          data: SliderTheme.of(context).copyWith(
+                            activeTrackColor: AppTheme.primaryColor,
+                            inactiveTrackColor: AppTheme.primaryColor
+                                .withOpacity(0.2),
+                            thumbColor: AppTheme.primaryColor,
+                            overlayColor: AppTheme.primaryColor.withOpacity(
+                              0.1,
+                            ),
+                            trackHeight: 6,
+                            thumbShape: const RoundSliderThumbShape(
+                              enabledThumbRadius: 10,
+                            ),
+                          ),
+                          child: Slider(
+                            value: selectedPercentage,
+                            min: 0,
+                            max: 100,
+                            divisions: 20,
+                            onChanged: (value) {
+                              setDialogState(() {
+                                selectedPercentage = value;
+                                percentageController.text = value
+                                    .toInt()
+                                    .toString();
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      SizedBox(
+                        width: 60,
+                        child: TextField(
+                          controller: percentageController,
+                          keyboardType: TextInputType.number,
+                          textAlign: TextAlign.center,
+                          decoration: InputDecoration(
+                            suffixText: '%',
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 8,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radiusSm,
+                              ),
+                              borderSide: const BorderSide(
+                                color: AppTheme.primaryColor,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          onChanged: (value) {
+                            final parsed = double.tryParse(value);
+                            if (parsed != null &&
+                                parsed >= 0 &&
+                                parsed <= 100) {
+                              setDialogState(() {
+                                selectedPercentage = parsed;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  // Preview calculation
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppTheme.successColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.calculate_outlined,
+                          color: AppTheme.successColor,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            'This will initialize: ${(gapClasses * selectedPercentage / 100).round()} attended out of $gapClasses classes',
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.successColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context, null);
+                },
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  Navigator.pop(context, selectedPercentage);
+                },
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppTheme.primaryColor,
+                ),
+                child: const Text('Confirm'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Future<void> _handleDelete() async {
@@ -235,6 +477,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -280,7 +523,12 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          16 + MediaQuery.of(context).padding.bottom,
+        ),
         child: Form(
           key: _formKey,
           child: Column(

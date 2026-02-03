@@ -69,6 +69,8 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      extendBodyBehindAppBar: true,
       body: Container(
         decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
         child: SafeArea(
@@ -104,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                         const SizedBox(height: 36),
                         const Text(
-                          'Smart Attendance',
+                          'Classy',
                           style: TextStyle(
                             fontSize: 30,
                             fontWeight: FontWeight.bold,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../providers/providers.dart';
 import '../utils/theme.dart';
 import '../widgets/common_widgets.dart';
@@ -14,6 +15,7 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         title: const Text(
@@ -46,7 +48,12 @@ class ProfileScreen extends StatelessWidget {
 
           return SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              16 + MediaQuery.of(context).padding.bottom,
+            ),
             child: Column(
               children: [
                 // Profile Card
@@ -118,74 +125,98 @@ class ProfileScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 // Stats Card
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.cardColor,
-                    borderRadius: BorderRadius.circular(20),
-                    boxShadow: AppTheme.cardShadow,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isSmallScreen = constraints.maxWidth < 340;
+                    final iconSize = isSmallScreen ? 44.0 : 56.0;
+                    final valueFontSize = isSmallScreen ? 16.0 : 20.0;
+                    final labelFontSize = isSmallScreen ? 10.0 : 12.0;
+                    final iconIconSize = isSmallScreen ? 22.0 : 28.0;
+
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: AppTheme.cardColor,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: AppTheme.cardShadow,
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(isSmallScreen ? 16 : 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primaryColor.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: const Icon(
-                                Icons.bar_chart_rounded,
-                                color: AppTheme.primaryColor,
-                                size: 20,
-                              ),
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.primaryColor.withOpacity(
+                                      0.1,
+                                    ),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: const Icon(
+                                    Icons.bar_chart_rounded,
+                                    color: AppTheme.primaryColor,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Your Statistics',
+                                  style: TextStyle(
+                                    fontSize: isSmallScreen ? 15 : 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.textPrimary,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Your Statistics',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
-                              ),
+                            SizedBox(height: isSmallScreen ? 16 : 20),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                _buildStatItemResponsive(
+                                  icon: Icons.school_rounded,
+                                  value: '${stats['subjectCount']}',
+                                  label: 'Subjects',
+                                  color: AppTheme.primaryColor,
+                                  iconSize: iconSize,
+                                  iconIconSize: iconIconSize,
+                                  valueFontSize: valueFontSize,
+                                  labelFontSize: labelFontSize,
+                                ),
+                                _buildStatItemResponsive(
+                                  icon: Icons.check_circle_rounded,
+                                  value: '${stats['totalAttended']}',
+                                  label: 'Attended',
+                                  color: AppTheme.successColor,
+                                  iconSize: iconSize,
+                                  iconIconSize: iconIconSize,
+                                  valueFontSize: valueFontSize,
+                                  labelFontSize: labelFontSize,
+                                ),
+                                _buildStatItemResponsive(
+                                  icon: Icons.calendar_today_rounded,
+                                  value: '${stats['totalClasses']}',
+                                  label: 'Total',
+                                  color: AppTheme.warningColor,
+                                  iconSize: iconSize,
+                                  iconIconSize: iconIconSize,
+                                  valueFontSize: valueFontSize,
+                                  labelFontSize: labelFontSize,
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: isSmallScreen ? 16 : 20),
+                            LabeledProgressBar(
+                              label: 'Overall Attendance',
+                              percentage: stats['percentage'],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            _buildStatItem(
-                              icon: Icons.school_rounded,
-                              value: '${stats['subjectCount']}',
-                              label: 'Subjects',
-                              color: AppTheme.primaryColor,
-                            ),
-                            _buildStatItem(
-                              icon: Icons.check_circle_rounded,
-                              value: '${stats['totalAttended']}',
-                              label: 'Attended',
-                              color: AppTheme.successColor,
-                            ),
-                            _buildStatItem(
-                              icon: Icons.calendar_today_rounded,
-                              value: '${stats['totalClasses']}',
-                              label: 'Total',
-                              color: AppTheme.warningColor,
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        LabeledProgressBar(
-                          label: 'Overall Attendance',
-                          percentage: stats['percentage'],
-                        ),
-                      ],
-                    ),
-                  ),
+                      ),
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -300,6 +331,52 @@ class ProfileScreen extends StatelessWidget {
           style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
         ),
       ],
+    );
+  }
+
+  Widget _buildStatItemResponsive({
+    required IconData icon,
+    required String value,
+    required String label,
+    required Color color,
+    required double iconSize,
+    required double iconIconSize,
+    required double valueFontSize,
+    required double labelFontSize,
+  }) {
+    return Flexible(
+      child: Column(
+        children: [
+          Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: iconIconSize),
+          ),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: valueFontSize,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: labelFontSize,
+              color: AppTheme.textSecondary,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -494,11 +571,94 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             const Text(
-              'Smart Attendance Tracker is a privacy-focused, offline-first app to help you track and improve your class attendance.',
+              'Classy is a privacy-focused, offline-first app to help you track and improve your class attendance.',
               style: TextStyle(
                 fontSize: 14,
                 height: 1.5,
                 color: AppTheme.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Divider(),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.textSecondary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                  ),
+                  child: const Icon(
+                    Icons.code_rounded,
+                    size: 16,
+                    color: AppTheme.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Developed by',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: AppTheme.textTertiary,
+                        ),
+                      ),
+                      Text(
+                        'Jayanshu Bhardwaj',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.textPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            GestureDetector(
+              onTap: () async {
+                HapticFeedback.lightImpact();
+                // Close the dialog first
+                Navigator.of(context).pop();
+                // Then launch the URL
+                final url = Uri.parse('https://github.com/jb-git-code');
+                try {
+                  await launchUrl(url, mode: LaunchMode.externalApplication);
+                } catch (e) {
+                  // URL launch failed
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  border: Border.all(color: AppTheme.dividerColor),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.open_in_new_rounded,
+                      size: 16,
+                      color: AppTheme.primaryColor,
+                    ),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'https://github.com/jb-git-code',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppTheme.primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

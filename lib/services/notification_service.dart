@@ -111,13 +111,13 @@ class NotificationService {
       iOS: iosDetails,
     );
 
-    // Schedule for Monday through Friday
+    // Schedule for Monday through Friday at 8 PM
     for (int day = DateTime.monday; day <= DateTime.friday; day++) {
       await _notifications.zonedSchedule(
         dailyReminderId + day,
-        'Attendance Reminder',
-        "Don't forget to attend your classes today!",
-        _nextInstanceOfWeekdayTime(day, 8, 0),
+        'Mark Your Attendance',
+        "Have you marked today's attendance? Tap to update now!",
+        _nextInstanceOfWeekdayTime(day, 20, 0),
         details,
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:

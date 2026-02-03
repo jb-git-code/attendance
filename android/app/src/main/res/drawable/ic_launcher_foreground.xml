@@ -24,9 +24,9 @@
         android:fillColor="#FFFFFF"
         android:pathData="M72,30 Q75,30 75,33 L75,42 Q75,45 72,45 Q69,45 69,42 L69,33 Q69,30 72,30 Z"/>
     
-    <!-- Success check circle -->
+    <!-- Success check circle - Teal green -->
     <path
-        android:fillColor="#10B981"
+        android:fillColor="#52796F"
         android:pathData="M54,68 m-18,0 a18,18 0 1,1 36,0 a18,18 0 1,1 -36,0"/>
     
     <!-- Check mark -->
@@ -45,20 +45,20 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"/>
     
-    <!-- Calendar dots row -->
+    <!-- Calendar dots row - Light sage -->
     <path
-        android:fillColor="#E2E8F0"
+        android:fillColor="#CAD2C5"
         android:pathData="M30,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
     <path
-        android:fillColor="#E2E8F0"
+        android:fillColor="#CAD2C5"
         android:pathData="M42,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
     <path
-        android:fillColor="#E2E8F0"
+        android:fillColor="#CAD2C5"
         android:pathData="M54,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
     <path
-        android:fillColor="#E2E8F0"
+        android:fillColor="#CAD2C5"
         android:pathData="M66,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
     <path
-        android:fillColor="#E2E8F0"
+        android:fillColor="#CAD2C5"
         android:pathData="M78,54 m-2.5,0 a2.5,2.5 0 1,1 5,0 a2.5,2.5 0 1,1 -5,0"/>
 </vector>

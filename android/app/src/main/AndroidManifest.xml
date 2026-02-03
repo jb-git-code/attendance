@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
     <application
-        android:label="Smart Attendance"
+        android:label="Classy"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
@@ -56,8 +56,17 @@
 
     </application>
 
-    <!-- Queries section -->
+    <!-- Queries section for url_launcher -->
     <queries>
+        <!-- Required for url_launcher to open URLs on Android 11+ -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="http"/>
+        </intent>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>

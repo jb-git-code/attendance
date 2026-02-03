@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App theme colors (night mode) -->
-    <color name="primary">#6366F1</color>
-    <color name="primary_dark">#4F46E5</color>
-    <color name="primary_light">#818CF8</color>
-    <color name="accent">#8B5CF6</color>
+    <!-- App theme colors (night mode) - Modern Academic -->
+    <color name="primary">#4A5B64</color>
+    <color name="primary_dark">#2F3E46</color>
+    <color name="primary_light">#6B7D85</color>
+    <color name="accent">#84A98C</color>
     
-    <!-- Splash screen -->
-    <color name="splash_background">#4F46E5</color>
+    <!-- Splash screen - Dark academic -->
+    <color name="splash_background">#1B2830</color>
     
-    <!-- Semantic colors -->
-    <color name="success">#10B981</color>
-    <color name="warning">#F59E0B</color>
-    <color name="error">#EF4444</color>
+    <!-- Premium surface colors - Dark mode -->
+    <color name="surface">#1E2428</color>
+    <color name="background">#141A1D</color>
+    
+    <!-- Semantic colors - Academic tones -->
+    <color name="success">#52796F</color>
+    <color name="warning">#E9C46A</color>
+    <color name="error">#BC4749</color>
 </resources>
