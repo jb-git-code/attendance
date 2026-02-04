@@ -65,13 +65,33 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AttendanceProvider(localStorageService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(localStorageService),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Classy',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const SplashScreen(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Classy',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: _getThemeMode(themeProvider.themeMode),
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
+  }
+
+  /// Convert ThemeProvider.ThemeMode to Flutter's ThemeMode
+  static ThemeMode _getThemeMode(dynamic themeModeEnum) {
+    final modeString = themeModeEnum.toString();
+    if (modeString.contains('dark')) {
+      return ThemeMode.dark;
+    } else if (modeString.contains('system')) {
+      return ThemeMode.system;
+    }
+    return ThemeMode.light;
   }
 }
