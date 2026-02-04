@@ -65,12 +65,23 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AttendanceProvider(localStorageService),
         ),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(localStorageService),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Classy',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        home: const SplashScreen(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Classy',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.isDarkMode
+                ? ThemeMode.dark
+                : ThemeMode.light,
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

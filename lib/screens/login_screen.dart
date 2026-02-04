@@ -82,22 +82,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 28),
-                const Text(
+                Text(
                   'Welcome Back!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.getTextPrimary(context),
                     letterSpacing: -0.5,
                   ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Sign in to continue tracking your attendance',
                   style: TextStyle(
                     fontSize: 15,
-                    color: AppTheme.textSecondary,
+                    color: AppTheme.getTextSecondary(context),
                     height: 1.4,
                   ),
                   textAlign: TextAlign.center,
@@ -233,10 +233,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       "Don't have an account? ",
                       style: TextStyle(
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                         fontSize: 15,
                       ),
                     ),

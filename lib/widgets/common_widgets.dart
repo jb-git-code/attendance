@@ -145,10 +145,10 @@ class _CustomTextFieldState extends State<CustomTextField> {
         autofocus: widget.autofocus,
         textInputAction: widget.textInputAction,
         onFieldSubmitted: widget.onSubmitted,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w500,
-          color: AppTheme.textPrimary,
+          color: AppTheme.getTextPrimary(context),
         ),
         decoration: InputDecoration(
           labelText: widget.label,
@@ -225,7 +225,7 @@ class CircularProgressWithPercentage extends StatelessWidget {
                 style: TextStyle(
                   fontSize: fontSize,
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.textPrimary,
+                  color: AppTheme.getTextPrimary(context),
                   letterSpacing: -0.5,
                 ),
               );
@@ -274,10 +274,10 @@ class LabeledProgressBar extends StatelessWidget {
           children: [
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
               ),
             ),
             TweenAnimationBuilder<double>(
@@ -367,10 +367,10 @@ class EmptyState extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppTheme.getTextPrimary(context),
                 letterSpacing: -0.3,
               ),
               textAlign: TextAlign.center,
@@ -378,9 +378,9 @@ class EmptyState extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               subtitle,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 15,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
@@ -452,9 +452,9 @@ class StatCard extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               label,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -536,10 +536,10 @@ class SectionHeader extends StatelessWidget {
         children: [
           Text(
             title,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppTheme.getTextPrimary(context),
               letterSpacing: -0.3,
             ),
           ),

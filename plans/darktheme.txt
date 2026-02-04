@@ -1,0 +1,122 @@
+Below is a clean, copy-paste ready README section written in a professional, human, and implementation-friendly way.
+You can save this as a separate file like THEME_GUIDELINES.md or merge it into your main README.md.
+
+⸻
+
+🎨 Dark Theme Design Plan (Black + Green)
+
+Overview
+
+The application includes a carefully designed dark theme focused on usability, minimalism, and long-term comfort.
+The theme uses a soft black background combined with green as the primary accent color, creating a modern, premium, and productivity-focused experience.
+
+Green is used intentionally to represent progress, growth, and positive attendance behavior, while layered dark surfaces and muted text colors reduce eye strain and visual clutter.
+
+⸻
+
+🌙 Core Dark Theme Colors
+
+Background & Surfaces
+	•	App Background: #0B0F0E
+(Soft black, avoids harsh pure black)
+	•	Primary Card / Surface: #121917
+	•	Elevated Card Surface: #16201D
+	•	Active / Highlighted Surface: #1C2A25
+	•	Divider / Border: #1F2933
+
+⸻
+
+🌿 Primary & Accent Colors
+	•	Primary Color (Green): #22C55E
+	•	Primary Dark Variant: #16A34A
+
+These colors are used for:
+	•	Progress indicators
+	•	Primary buttons
+	•	Key highlights
+	•	Important icons
+
+⸻
+
+📝 Text Colors
+	•	Primary Text: #E5E7EB
+	•	Secondary Text: #9CA3AF
+	•	Disabled / Hint Text: #6B7280
+
+Text colors are chosen to ensure high contrast while remaining comfortable for prolonged use.
+
+⸻
+
+🧩 Cards & Layout Styling
+
+Card Guidelines
+	•	Background: #121917 or #16201D
+	•	Border Radius: 12–16
+	•	Elevation: Very subtle
+	•	Optional border:
+	•	Color: #1F2E28
+
+Cards use layered dark shades instead of strong shadows to maintain a clean and minimal aesthetic.
+
+⸻
+
+🎯 Icons & Navigation
+
+Icon Colors
+	•	Primary Icons: #22C55E
+	•	Secondary Icons: #9CA3AF
+	•	Inactive Icons: #6B7280
+
+AppBar
+	•	Background: #0B0F0E
+	•	Text & Icons: #E5E7EB
+
+⸻
+
+📊 Progress Indicators & Charts
+
+Attendance progress uses status-based colors for instant understanding:
+
+Status	Color
+Excellent (>85%)	#22C55E
+Good (75–85%)	#4ADE80
+Warning (65–75%)	#FACC15
+At Risk (<65%)	#EF4444
+
+Only progress elements and charts use these colors to avoid visual overload.
+
+⸻
+
+🎨 Optional Accent Variants (Use Sparingly)
+
+One optional accent color may be enabled at a time:
+	•	Teal Accent: #14B8A6
+	•	Cyan Accent: #06B6D4
+	•	Lime Accent: #84CC16
+
+These are suitable for:
+	•	Secondary highlights
+	•	Micro-interactions
+	•	Special UI states
+
+⸻
+
+🧠 UX & Accessibility Principles
+	•	Avoid pure black (#000000)
+	•	Avoid neon or overly bright greens
+	•	Limit primary green usage to ~20% of the UI
+	•	Maintain WCAG-compliant contrast ratios
+	•	Use subtle animations when switching themes
+
+⸻
+
+📝 Design Rationale
+
+The dark theme is designed to balance clarity and comfort by using layered black shades and a restrained green accent.
+
+The color system ensures that attention is drawn only to important actions and progress indicators, while the rest of the interface remains calm and distraction-free.
+
+This approach supports long usage sessions, improves focus, and aligns with modern minimal UI principles.
+
+⸻
+

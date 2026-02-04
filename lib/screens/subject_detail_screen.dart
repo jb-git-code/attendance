@@ -33,20 +33,22 @@ class SubjectDetailScreen extends StatelessWidget {
 
         return Scaffold(
           extendBody: true,
-          backgroundColor: AppTheme.backgroundColor,
+          backgroundColor: AppTheme.getBackgroundColor(context),
           appBar: AppBar(
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.getCardColor(context),
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                boxShadow: AppTheme.cardShadow,
+                boxShadow: AppTheme.isDark(context)
+                    ? null
+                    : AppTheme.cardShadow,
               ),
               child: IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-                color: AppTheme.textPrimary,
+                color: AppTheme.getTextPrimary(context),
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   Navigator.pop(context);
@@ -55,22 +57,21 @@ class SubjectDetailScreen extends StatelessWidget {
             ),
             title: Text(
               subject.name,
-              style: const TextStyle(
-                color: AppTheme.textPrimary,
+              style: TextStyle(
+                color: AppTheme.getTextPrimary(context),
                 fontWeight: FontWeight.bold,
               ),
             ),
             actions: [
               Container(
                 margin: const EdgeInsets.only(right: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                  boxShadow: AppTheme.cardShadow,
+                decoration: AppTheme.getCardDecoration(
+                  context,
+                  radius: AppTheme.radiusMd,
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.edit_rounded, size: 20),
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.getPrimaryColor(context),
                   onPressed: () {
                     HapticFeedback.lightImpact();
                     Navigator.push(
@@ -85,10 +86,9 @@ class SubjectDetailScreen extends StatelessWidget {
               ),
               Container(
                 margin: const EdgeInsets.only(right: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                  boxShadow: AppTheme.cardShadow,
+                decoration: AppTheme.getCardDecoration(
+                  context,
+                  radius: AppTheme.radiusMd,
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.delete_outline_rounded, size: 20),
@@ -173,10 +173,9 @@ class SubjectDetailScreen extends StatelessWidget {
         final spacing = isSmallScreen ? 10.0 : (isMediumScreen ? 14.0 : 20.0);
 
         return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            boxShadow: AppTheme.cardShadow,
+          decoration: AppTheme.getCardDecoration(
+            context,
+            radius: AppTheme.radiusLg,
           ),
           child: Padding(
             padding: EdgeInsets.all(padding),
@@ -187,9 +186,11 @@ class SubjectDetailScreen extends StatelessWidget {
                   width: iconSize,
                   height: iconSize,
                   decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
+                    gradient: AppTheme.getPrimaryGradient(context),
                     borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                    boxShadow: AppTheme.primaryShadow(0.2),
+                    boxShadow: AppTheme.isDark(context)
+                        ? null
+                        : AppTheme.primaryShadow(0.2),
                   ),
                   child: Icon(
                     SubjectIcons.getIcon(subject.icon),
@@ -208,7 +209,7 @@ class SubjectDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: titleFontSize,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
+                          color: AppTheme.getTextPrimary(context),
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -219,18 +220,21 @@ class SubjectDetailScreen extends StatelessWidget {
                         runSpacing: 8,
                         children: [
                           _buildStatItem(
+                            context,
                             'Attended',
                             subject.attendedClasses.toString(),
                             AppTheme.successColor,
                             isSmall: isSmallScreen,
                           ),
                           _buildStatItem(
+                            context,
                             'Total',
                             subject.totalClasses.toString(),
                             AppTheme.primaryColor,
                             isSmall: isSmallScreen,
                           ),
                           _buildStatItem(
+                            context,
                             'Weekly',
                             '$weeklyAttended/${subject.weeklyGoal}',
                             AppTheme.warningColor,
@@ -257,6 +261,7 @@ class SubjectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildStatItem(
+    BuildContext context,
     String label,
     String value,
     Color color, {
@@ -278,7 +283,7 @@ class SubjectDetailScreen extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: isSmall ? 10 : 12,
-            color: AppTheme.textSecondary,
+            color: AppTheme.getTextSecondary(context),
           ),
         ),
       ],
@@ -286,94 +291,92 @@ class SubjectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildAttendanceChart(Subject subject) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  ),
-                  child: const Icon(
-                    Icons.pie_chart_rounded,
-                    color: AppTheme.primaryColor,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Attendance Overview',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 200,
-              child: PieChart(
-                PieChartData(
-                  sections: [
-                    PieChartSectionData(
-                      value: subject.attendedClasses.toDouble(),
-                      title: 'Attended\n${subject.attendedClasses}',
-                      color: AppTheme.successColor,
-                      radius: 80,
-                      titleStyle: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+    return Builder(
+      builder: (context) => Container(
+        decoration: AppTheme.getCardDecoration(context),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: AppTheme.getIconContainerDecoration(
+                      context,
+                      AppTheme.getPrimaryColor(context),
                     ),
-                    PieChartSectionData(
-                      value: (subject.totalClasses - subject.attendedClasses)
-                          .toDouble(),
-                      title:
-                          'Missed\n${subject.totalClasses - subject.attendedClasses}',
-                      color: AppTheme.errorColor,
-                      radius: 80,
-                      titleStyle: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: Icon(
+                      Icons.pie_chart_rounded,
+                      color: AppTheme.getPrimaryColor(context),
+                      size: 20,
                     ),
-                  ],
-                  centerSpaceRadius: 0,
-                  sectionsSpace: 2,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Attendance Overview',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.getTextPrimary(context),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                height: 200,
+                child: PieChart(
+                  PieChartData(
+                    sections: [
+                      PieChartSectionData(
+                        value: subject.attendedClasses.toDouble(),
+                        title: 'Attended\n${subject.attendedClasses}',
+                        color: AppTheme.successColor,
+                        radius: 80,
+                        titleStyle: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      PieChartSectionData(
+                        value: (subject.totalClasses - subject.attendedClasses)
+                            .toDouble(),
+                        title:
+                            'Missed\n${subject.totalClasses - subject.attendedClasses}',
+                        color: AppTheme.errorColor,
+                        radius: 80,
+                        titleStyle: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                    centerSpaceRadius: 0,
+                    sectionsSpace: 2,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildLegendItem('Attended', AppTheme.successColor),
-                const SizedBox(width: 24),
-                _buildLegendItem('Missed', AppTheme.errorColor),
-              ],
-            ),
-          ],
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  _buildLegendItem(context, 'Attended', AppTheme.successColor),
+                  const SizedBox(width: 24),
+                  _buildLegendItem(context, 'Missed', AppTheme.errorColor),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildLegendItem(String label, Color color) {
+  Widget _buildLegendItem(BuildContext context, String label, Color color) {
     return Row(
       children: [
         Container(
@@ -387,7 +390,10 @@ class SubjectDetailScreen extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           label,
-          style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary),
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.getTextSecondary(context),
+          ),
         ),
       ],
     );
@@ -398,83 +404,81 @@ class SubjectDetailScreen extends StatelessWidget {
         ? (weeklyAttended / subject.weeklyGoal * 100).clamp(0, 100).toDouble()
         : 0.0;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: AppTheme.warningColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+    return Builder(
+      builder: (context) => Container(
+        decoration: AppTheme.getCardDecoration(context),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: AppTheme.getIconContainerDecoration(
+                          context,
+                          AppTheme.warningColor,
+                        ),
+                        child: const Icon(
+                          Icons.trending_up_rounded,
+                          color: AppTheme.warningColor,
+                          size: 20,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.trending_up_rounded,
-                        color: AppTheme.warningColor,
-                        size: 20,
+                      const SizedBox(width: 12),
+                      Text(
+                        'Weekly Progress',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.getTextPrimary(context),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    const Text(
-                      'Weekly Progress',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
-                      ),
-                    ),
-                  ],
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 4,
+                    ],
                   ),
-                  decoration: BoxDecoration(
-                    color: weeklyProgress >= 100
-                        ? AppTheme.successColor.withOpacity(0.1)
-                        : AppTheme.warningColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusFull),
-                  ),
-                  child: Text(
-                    weeklyProgress >= 100 ? 'Goal Met!' : 'In Progress',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
                       color: weeklyProgress >= 100
-                          ? AppTheme.successColor
-                          : AppTheme.warningColor,
+                          ? AppTheme.successColor.withOpacity(0.1)
+                          : AppTheme.warningColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(AppTheme.radiusFull),
+                    ),
+                    child: Text(
+                      weeklyProgress >= 100 ? 'Goal Met!' : 'In Progress',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: weeklyProgress >= 100
+                            ? AppTheme.successColor
+                            : AppTheme.warningColor,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            LabeledProgressBar(
-              label: 'Classes this week',
-              percentage: weeklyProgress,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              '$weeklyAttended of ${subject.weeklyGoal} classes attended',
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppTheme.textSecondary,
+                ],
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              LabeledProgressBar(
+                label: 'Classes this week',
+                percentage: weeklyProgress,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '$weeklyAttended of ${subject.weeklyGoal} classes attended',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppTheme.getTextSecondary(context),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -483,97 +487,99 @@ class SubjectDetailScreen extends StatelessWidget {
   Widget _buildRecentRecordsCard(List<AttendanceRecord> records) {
     final recentRecords = records.take(5).toList();
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppTheme.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                  ),
-                  child: const Icon(
-                    Icons.history_rounded,
-                    color: AppTheme.secondaryColor,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Recent Records',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (recentRecords.isEmpty)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Text(
-                    'No attendance records yet',
-                    style: TextStyle(color: AppTheme.textSecondary),
-                  ),
-                ),
-              )
-            else
-              ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recentRecords.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (context, index) {
-                  final record = recentRecords[index];
-                  return ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: _getStatusColor(record.status).withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        _getStatusIcon(record.status),
-                        color: _getStatusColor(record.status),
-                      ),
+    return Builder(
+      builder: (context) => Container(
+        decoration: AppTheme.getCardDecoration(context),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: AppTheme.getIconContainerDecoration(
+                      context,
+                      AppTheme.secondaryColor,
                     ),
-                    title: Text(
-                      DateFormat('EEEE, MMM dd').format(record.date),
-                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    child: const Icon(
+                      Icons.history_rounded,
+                      color: AppTheme.secondaryColor,
+                      size: 20,
                     ),
-                    subtitle: Text(
-                      DateFormat('hh:mm a').format(record.date),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.textSecondary,
-                      ),
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Recent Records',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.getTextPrimary(context),
                     ),
-                    trailing: Text(
-                      _getStatusLabel(record.status),
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: _getStatusColor(record.status),
-                      ),
-                    ),
-                  );
-                },
+                  ),
+                ],
               ),
-          ],
+              const SizedBox(height: 16),
+              if (recentRecords.isEmpty)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'No attendance records yet',
+                      style: TextStyle(
+                        color: AppTheme.getTextSecondary(context),
+                      ),
+                    ),
+                  ),
+                )
+              else
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: recentRecords.length,
+                  separatorBuilder: (_, __) => const Divider(),
+                  itemBuilder: (context, index) {
+                    final record = recentRecords[index];
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _getStatusColor(
+                            record.status,
+                          ).withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          _getStatusIcon(record.status),
+                          color: _getStatusColor(record.status),
+                        ),
+                      ),
+                      title: Text(
+                        DateFormat('EEEE, MMM dd').format(record.date),
+                        style: const TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                      subtitle: Text(
+                        DateFormat('hh:mm a').format(record.date),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppTheme.getTextSecondary(context),
+                        ),
+                      ),
+                      trailing: Text(
+                        _getStatusLabel(record.status),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _getStatusColor(record.status),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -614,7 +620,10 @@ class SubjectDetailScreen extends StatelessWidget {
         ),
         content: Text(
           'Are you sure you want to delete "${subject.name}"?\n\nThis will also delete all attendance records for this subject. This action cannot be undone.',
-          style: const TextStyle(color: AppTheme.textSecondary, height: 1.4),
+          style: TextStyle(
+            color: AppTheme.getTextSecondary(context),
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
@@ -708,18 +717,14 @@ class SubjectDetailScreen extends StatelessWidget {
         final iconPadding = isSmallScreen ? 8.0 : 10.0;
 
         return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            boxShadow: AppTheme.cardShadow,
-          ),
+          decoration: AppTheme.getCardDecoration(context),
           child: Column(
             children: [
               // Header
               Container(
                 padding: EdgeInsets.all(cardPadding),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.getSurfaceColor(context),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AppTheme.radiusLg),
                   ),
@@ -728,13 +733,13 @@ class SubjectDetailScreen extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                      decoration: AppTheme.getIconContainerDecoration(
+                        context,
+                        AppTheme.getPrimaryColor(context),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.analytics_rounded,
-                        color: Colors.white,
+                        color: AppTheme.getPrimaryColor(context),
                         size: 20,
                       ),
                     ),
@@ -745,7 +750,7 @@ class SubjectDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: isSmallScreen ? 14 : 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppTheme.getTextPrimary(context),
                         ),
                       ),
                     ),
@@ -767,13 +772,15 @@ class SubjectDetailScreen extends StatelessWidget {
                             Icon(
                               Icons.hourglass_empty_rounded,
                               size: isSmallScreen ? 36 : 48,
-                              color: AppTheme.textTertiary.withOpacity(0.5),
+                              color: AppTheme.getTextTertiary(
+                                context,
+                              ).withOpacity(0.5),
                             ),
                             const SizedBox(height: 12),
                             Text(
                               'Start attending classes to see predictions',
                               style: TextStyle(
-                                color: AppTheme.textSecondary,
+                                color: AppTheme.getTextSecondary(context),
                                 fontSize: isSmallScreen ? 12 : 14,
                               ),
                               textAlign: TextAlign.center,
@@ -789,7 +796,7 @@ class SubjectDetailScreen extends StatelessWidget {
                           vertical: isSmallScreen ? 10 : 12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundColor,
+                          color: AppTheme.getSurfaceColor(context),
                           borderRadius: BorderRadius.circular(
                             AppTheme.radiusMd,
                           ),
@@ -800,7 +807,7 @@ class SubjectDetailScreen extends StatelessWidget {
                             Text(
                               'Current: ',
                               style: TextStyle(
-                                color: AppTheme.textSecondary,
+                                color: AppTheme.getTextSecondary(context),
                                 fontSize: isSmallScreen ? 12 : 14,
                               ),
                             ),
@@ -809,7 +816,7 @@ class SubjectDetailScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: isSmallScreen ? 16 : 20,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.textPrimary,
+                                color: AppTheme.getTextPrimary(context),
                               ),
                             ),
                           ],
@@ -860,7 +867,7 @@ class SubjectDetailScreen extends StatelessWidget {
                                     'If Attend',
                                     style: TextStyle(
                                       fontSize: labelFontSize,
-                                      color: AppTheme.textSecondary,
+                                      color: AppTheme.getTextSecondary(context),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -957,7 +964,7 @@ class SubjectDetailScreen extends StatelessWidget {
                                     'If Miss',
                                     style: TextStyle(
                                       fontSize: labelFontSize,
-                                      color: AppTheme.textSecondary,
+                                      color: AppTheme.getTextSecondary(context),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -1073,35 +1080,14 @@ class SubjectDetailScreen extends StatelessWidget {
         final subLabelFontSize = isSmallScreen ? 11.0 : 13.0;
 
         return Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-            boxShadow: AppTheme.cardShadow,
-          ),
+          decoration: AppTheme.getCardDecoration(context),
           child: Column(
             children: [
-              // Header with gradient
+              // Header
               Container(
                 padding: EdgeInsets.all(isSmallScreen ? 12 : 16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: isBelow
-                        ? [
-                            AppTheme.errorColor,
-                            AppTheme.errorColor.withOpacity(0.8),
-                          ]
-                        : isSafe
-                        ? [
-                            AppTheme.successColor,
-                            AppTheme.successColor.withOpacity(0.8),
-                          ]
-                        : [
-                            AppTheme.warningColor,
-                            AppTheme.warningColor.withOpacity(0.8),
-                          ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+                  color: AppTheme.getSurfaceColor(context),
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(AppTheme.radiusLg),
                   ),
@@ -1110,13 +1096,21 @@ class SubjectDetailScreen extends StatelessWidget {
                   children: [
                     Container(
                       padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                      decoration: AppTheme.getIconContainerDecoration(
+                        context,
+                        isBelow
+                            ? AppTheme.errorColor
+                            : isSafe
+                            ? AppTheme.successColor
+                            : AppTheme.warningColor,
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.calculate_rounded,
-                        color: Colors.white,
+                        color: isBelow
+                            ? AppTheme.errorColor
+                            : isSafe
+                            ? AppTheme.successColor
+                            : AppTheme.warningColor,
                         size: 20,
                       ),
                     ),
@@ -1127,7 +1121,7 @@ class SubjectDetailScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: isSmallScreen ? 14 : 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: AppTheme.getTextPrimary(context),
                         ),
                       ),
                     ),
@@ -1159,20 +1153,22 @@ class SubjectDetailScreen extends StatelessWidget {
                             Icon(
                               Icons.hourglass_empty_rounded,
                               size: isSmallScreen ? 36 : 48,
-                              color: AppTheme.textTertiary.withOpacity(0.5),
+                              color: AppTheme.getTextTertiary(
+                                context,
+                              ).withOpacity(0.5),
                             ),
                             const SizedBox(height: 12),
                             Text(
                               'No classes yet',
                               style: TextStyle(
-                                color: AppTheme.textSecondary,
+                                color: AppTheme.getTextSecondary(context),
                                 fontSize: labelFontSize,
                               ),
                             ),
                             Text(
                               'Start tracking to see your bunk allowance',
                               style: TextStyle(
-                                color: AppTheme.textTertiary,
+                                color: AppTheme.getTextTertiary(context),
                                 fontSize: isSmallScreen ? 11 : 12,
                               ),
                               textAlign: TextAlign.center,
@@ -1217,7 +1213,7 @@ class SubjectDetailScreen extends StatelessWidget {
                                 fontSize: labelFontSize,
                                 color: isSafe
                                     ? AppTheme.successColor
-                                    : AppTheme.textSecondary,
+                                    : AppTheme.getTextSecondary(context),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -1267,7 +1263,7 @@ class SubjectDetailScreen extends StatelessWidget {
                               'and stay above $targetPercentage%',
                               style: TextStyle(
                                 fontSize: subLabelFontSize,
-                                color: AppTheme.textSecondary,
+                                color: AppTheme.getTextSecondary(context),
                               ),
                             ),
                           ],
@@ -1280,7 +1276,7 @@ class SubjectDetailScreen extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(isSmallScreen ? 10 : 12),
                         decoration: BoxDecoration(
-                          color: AppTheme.backgroundColor,
+                          color: AppTheme.getSurfaceColor(context),
                           borderRadius: BorderRadius.circular(
                             AppTheme.radiusMd,
                           ),
@@ -1289,6 +1285,7 @@ class SubjectDetailScreen extends StatelessWidget {
                           children: [
                             Expanded(
                               child: _buildBunkStat(
+                                context,
                                 'Remaining',
                                 '$remainingClasses',
                                 Icons.event_available_rounded,
@@ -1302,6 +1299,7 @@ class SubjectDetailScreen extends StatelessWidget {
                             ),
                             Expanded(
                               child: _buildBunkStat(
+                                context,
                                 'Must Attend',
                                 '${provider.getClassesNeededToRecover(subjectId)}',
                                 Icons.check_circle_outline_rounded,
@@ -1315,6 +1313,7 @@ class SubjectDetailScreen extends StatelessWidget {
                             ),
                             Expanded(
                               child: _buildBunkStat(
+                                context,
                                 'Target',
                                 '$targetPercentage%',
                                 Icons.flag_rounded,
@@ -1336,6 +1335,7 @@ class SubjectDetailScreen extends StatelessWidget {
   }
 
   Widget _buildBunkStat(
+    BuildContext context,
     String label,
     String value,
     IconData icon, {
@@ -1343,7 +1343,11 @@ class SubjectDetailScreen extends StatelessWidget {
   }) {
     return Column(
       children: [
-        Icon(icon, size: isSmall ? 16 : 18, color: AppTheme.textTertiary),
+        Icon(
+          icon,
+          size: isSmall ? 16 : 18,
+          color: AppTheme.getTextTertiary(context),
+        ),
         SizedBox(height: isSmall ? 4 : 6),
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -1352,14 +1356,17 @@ class SubjectDetailScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: isSmall ? 14 : 16,
               fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimary,
+              color: AppTheme.getTextPrimary(context),
             ),
           ),
         ),
         SizedBox(height: isSmall ? 1 : 2),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppTheme.textTertiary),
+          style: TextStyle(
+            fontSize: 11,
+            color: AppTheme.getTextTertiary(context),
+          ),
         ),
       ],
     );
@@ -1413,111 +1420,113 @@ class SubjectDetailScreen extends StatelessWidget {
     final remainingWeeks = provider.getRemainingWeeks();
     final semesterWarning = provider.getSemesterAwareWarning(subjectId);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-        boxShadow: AppTheme.cardShadow,
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    gradient: AppTheme.primaryGradient,
-                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+    return Builder(
+      builder: (context) => Container(
+        decoration: AppTheme.getCardDecoration(context),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: AppTheme.getIconContainerDecoration(
+                      context,
+                      AppTheme.getPrimaryColor(context),
+                    ),
+                    child: Icon(
+                      Icons.calendar_today_rounded,
+                      color: AppTheme.getPrimaryColor(context),
+                      size: 20,
+                    ),
                   ),
-                  child: const Icon(
-                    Icons.calendar_today_rounded,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Semester Progress',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: AppTheme.textPrimary,
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Semester Progress',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: AppTheme.getTextPrimary(context),
+                          ),
                         ),
-                      ),
-                      Text(
-                        provider.getSemesterStatusMessage(),
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppTheme.textSecondary,
+                        Text(
+                          provider.getSemesterStatusMessage(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.getTextSecondary(context),
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: _buildSemesterStatItem(
-                    value: '$remainingClasses',
-                    label: 'Classes Left',
-                    icon: Icons.class_rounded,
-                    color: AppTheme.primaryColor,
-                  ),
-                ),
-                Expanded(
-                  child: _buildSemesterStatItem(
-                    value: '$remainingDays',
-                    label: 'Days Left',
-                    icon: Icons.today_rounded,
-                    color: AppTheme.warningColor,
-                  ),
-                ),
-                Expanded(
-                  child: _buildSemesterStatItem(
-                    value: '$remainingWeeks',
-                    label: 'Weeks Left',
-                    icon: Icons.date_range_rounded,
-                    color: AppTheme.secondaryColor,
-                  ),
-                ),
-              ],
-            ),
-            if (semesterWarning != null) ...[
-              const SizedBox(height: 12),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppTheme.warningColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-                ),
-                child: Text(
-                  semesterWarning,
-                  style: const TextStyle(
-                    color: AppTheme.warningColor,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                ],
               ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildSemesterStatItem(
+                      context: context,
+                      value: '$remainingClasses',
+                      label: 'Classes Left',
+                      icon: Icons.class_rounded,
+                      color: AppTheme.primaryColor,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildSemesterStatItem(
+                      context: context,
+                      value: '$remainingDays',
+                      label: 'Days Left',
+                      icon: Icons.today_rounded,
+                      color: AppTheme.warningColor,
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildSemesterStatItem(
+                      context: context,
+                      value: '$remainingWeeks',
+                      label: 'Weeks Left',
+                      icon: Icons.date_range_rounded,
+                      color: AppTheme.secondaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              if (semesterWarning != null) ...[
+                const SizedBox(height: 12),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warningColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                  ),
+                  child: Text(
+                    semesterWarning,
+                    style: const TextStyle(
+                      color: AppTheme.warningColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSemesterStatItem({
+    required BuildContext context,
     required String value,
     required String label,
     required IconData icon,
@@ -1544,7 +1553,10 @@ class SubjectDetailScreen extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+          style: TextStyle(
+            fontSize: 11,
+            color: AppTheme.getTextSecondary(context),
+          ),
         ),
       ],
     );

@@ -106,11 +106,11 @@ class _HomeScreenState extends State<HomeScreen>
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               'Set your semester dates first to get the most out of the app.',
               style: TextStyle(
                 fontSize: 15,
-                color: AppTheme.textSecondary,
+                color: AppTheme.getTextSecondary(context),
                 height: 1.5,
               ),
             ),
@@ -129,12 +129,12 @@ class _HomeScreenState extends State<HomeScreen>
                     size: 20,
                   ),
                   const SizedBox(width: 10),
-                  const Expanded(
+                  Expanded(
                     child: Text(
                       'This helps calculate predictions and bunk allowances accurately.',
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                       ),
                     ),
                   ),
@@ -211,9 +211,9 @@ class _HomeScreenState extends State<HomeScreen>
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
-        decoration: const BoxDecoration(
-          color: AppTheme.surfaceColor,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        decoration: BoxDecoration(
+          color: AppTheme.getSurfaceColor(context),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         ),
         padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
         child: Column(
@@ -226,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen>
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.dividerColor,
+                  color: AppTheme.getDividerColor(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -236,10 +236,10 @@ class _HomeScreenState extends State<HomeScreen>
               todayRecord == null
                   ? 'Mark Today\'s Class'
                   : 'Update Class Status',
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+                color: AppTheme.getTextPrimary(context),
                 letterSpacing: -0.3,
               ),
             ),
@@ -262,9 +262,9 @@ class _HomeScreenState extends State<HomeScreen>
                 Expanded(
                   child: Text(
                     subject.name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
-                      color: AppTheme.textSecondary,
+                      color: AppTheme.getTextSecondary(context),
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -376,10 +376,10 @@ class _HomeScreenState extends State<HomeScreen>
           decoration: BoxDecoration(
             color: isSelected
                 ? color.withOpacity(0.1)
-                : AppTheme.backgroundColor,
+                : AppTheme.getBackgroundColor(context),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isSelected ? color : AppTheme.dividerColor,
+              color: isSelected ? color : AppTheme.getDividerColor(context),
               width: isSelected ? 2 : 1,
             ),
           ),
@@ -403,7 +403,9 @@ class _HomeScreenState extends State<HomeScreen>
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? color : AppTheme.textPrimary,
+                        color: isSelected
+                            ? color
+                            : AppTheme.getTextPrimary(context),
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -411,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen>
                       subtitle,
                       style: TextStyle(
                         fontSize: 13,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                       ),
                     ),
                   ],
@@ -481,26 +483,55 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: false,
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.getBackgroundColor(context),
       appBar: AppBar(
         title: const Text(
           'Classy',
           style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: -0.5),
         ),
         actions: [
+          // Dark Mode Toggle
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              return Container(
+                margin: const EdgeInsets.only(right: 4),
+                child: IconButton(
+                  icon: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppTheme.getSurfaceColor(context),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      themeProvider.isDarkMode
+                          ? Icons.light_mode_rounded
+                          : Icons.dark_mode_rounded,
+                      size: 22,
+                      color: AppTheme.getTextSecondary(context),
+                    ),
+                  ),
+                  onPressed: () {
+                    HapticFeedback.lightImpact();
+                    themeProvider.toggleTheme();
+                  },
+                ),
+              );
+            },
+          ),
+          // Profile button
           Container(
             margin: const EdgeInsets.only(right: 8),
             child: IconButton(
               icon: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryColor.withOpacity(0.1),
+                  color: AppTheme.getPrimaryColor(context).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.person_rounded,
                   size: 22,
-                  color: AppTheme.primaryColor,
+                  color: AppTheme.getPrimaryColor(context),
                 ),
               ),
               onPressed: () {
@@ -561,20 +592,20 @@ class _HomeScreenState extends State<HomeScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Your Subjects',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.textPrimary,
+                            color: AppTheme.getTextPrimary(context),
                             letterSpacing: -0.3,
                           ),
                         ),
                         Text(
                           '${provider.subjects.length} subjects',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
-                            color: AppTheme.textSecondary,
+                            color: AppTheme.getTextSecondary(context),
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -852,9 +883,9 @@ class _HomeScreenState extends State<HomeScreen>
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) => Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          decoration: BoxDecoration(
+            color: AppTheme.getSurfaceColor(context),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: Column(
             children: [
@@ -864,7 +895,7 @@ class _HomeScreenState extends State<HomeScreen>
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: AppTheme.getDividerColor(context),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -876,7 +907,7 @@ class _HomeScreenState extends State<HomeScreen>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        gradient: AppTheme.primaryGradient,
+                        gradient: AppTheme.getPrimaryGradient(context),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: const Icon(
@@ -886,7 +917,7 @@ class _HomeScreenState extends State<HomeScreen>
                       ),
                     ),
                     const SizedBox(width: 14),
-                    const Expanded(
+                    Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -895,14 +926,14 @@ class _HomeScreenState extends State<HomeScreen>
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                              color: AppTheme.getTextPrimary(context),
                             ),
                           ),
                           Text(
                             'Detailed breakdown by subject',
                             style: TextStyle(
                               fontSize: 13,
-                              color: AppTheme.textSecondary,
+                              color: AppTheme.getTextSecondary(context),
                             ),
                           ),
                         ],
@@ -975,9 +1006,9 @@ class _HomeScreenState extends State<HomeScreen>
                         Expanded(
                           child: Text(
                             provider.getSemesterStatusMessage(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppTheme.textSecondary,
+                              color: AppTheme.getTextSecondary(context),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -992,20 +1023,20 @@ class _HomeScreenState extends State<HomeScreen>
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    const Text(
+                    Text(
                       'Subject Breakdown',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.textPrimary,
+                        color: AppTheme.getTextPrimary(context),
                       ),
                     ),
                     const Spacer(),
                     Text(
                       '${subjects.length} subjects',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
-                        color: AppTheme.textSecondary,
+                        color: AppTheme.getTextSecondary(context),
                       ),
                     ),
                   ],
@@ -1073,18 +1104,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
+      decoration: AppTheme.getCardDecoration(context, radius: 14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1093,10 +1113,10 @@ class _HomeScreenState extends State<HomeScreen>
               Expanded(
                 child: Text(
                   subject.name,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.getTextPrimary(context),
                   ),
                 ),
               ),
@@ -1135,18 +1155,21 @@ class _HomeScreenState extends State<HomeScreen>
           Row(
             children: [
               _buildMiniStat(
+                context,
                 Icons.check_circle_outline_rounded,
                 '${subject.attendedClasses}/${subject.totalClasses}',
                 'Classes',
               ),
               const SizedBox(width: 16),
               _buildMiniStat(
+                context,
                 Icons.calendar_view_week_rounded,
                 '$weeklyAttended/${subject.weeklyGoal}',
                 'This Week',
               ),
               const SizedBox(width: 16),
               _buildMiniStat(
+                context,
                 isAtRisk
                     ? Icons.warning_amber_rounded
                     : Icons.beach_access_rounded,
@@ -1162,12 +1185,15 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildMiniStat(
+    BuildContext context,
     IconData icon,
     String value,
     String label, {
     bool isWarning = false,
   }) {
-    final color = isWarning ? AppTheme.errorColor : AppTheme.textSecondary;
+    final color = isWarning
+        ? AppTheme.errorColor
+        : AppTheme.getTextSecondary(context);
     return Expanded(
       child: Row(
         children: [
@@ -1182,7 +1208,7 @@ class _HomeScreenState extends State<HomeScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: isWarning ? color : AppTheme.textPrimary,
+                    color: isWarning ? color : AppTheme.getTextPrimary(context),
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1292,11 +1318,7 @@ class _HomeScreenState extends State<HomeScreen>
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: AppTheme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: AppTheme.cardShadow,
-      ),
+      decoration: AppTheme.getCardDecoration(context, radius: 16),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -1320,21 +1342,14 @@ class _HomeScreenState extends State<HomeScreen>
                     Container(
                       width: iconContainerSize,
                       height: iconContainerSize,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppTheme.primaryColor.withOpacity(0.15),
-                            AppTheme.primaryColor.withOpacity(0.08),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
+                      decoration: AppTheme.getIconContainerDecoration(
+                        context,
+                        AppTheme.getPrimaryColor(context),
                       ),
                       child: Icon(
                         SubjectIcons.getIcon(subject.icon),
                         size: iconSize,
-                        color: AppTheme.primaryColor,
+                        color: AppTheme.getPrimaryColor(context),
                       ),
                     ),
                     // Notification dot for pending status update
@@ -1391,7 +1406,7 @@ class _HomeScreenState extends State<HomeScreen>
                               style: TextStyle(
                                 fontSize: nameFontSize,
                                 fontWeight: FontWeight.w600,
-                                color: AppTheme.textPrimary,
+                                color: AppTheme.getTextPrimary(context),
                                 letterSpacing: -0.2,
                               ),
                               maxLines: 1,
@@ -1451,6 +1466,7 @@ class _HomeScreenState extends State<HomeScreen>
                       Row(
                         children: [
                           _buildFlexibleStat(
+                            context: context,
                             value: '${subject.attendedClasses}',
                             label: 'Attended',
                             color: AppTheme.successColor,
@@ -1459,14 +1475,16 @@ class _HomeScreenState extends State<HomeScreen>
                           ),
                           SizedBox(width: isSmallScreen ? 12 : 16),
                           _buildFlexibleStat(
+                            context: context,
                             value: '${subject.totalClasses}',
                             label: 'Total',
-                            color: AppTheme.textSecondary,
+                            color: AppTheme.getTextSecondary(context),
                             valueFontSize: statValueFontSize,
                             labelFontSize: statLabelFontSize,
                           ),
                           SizedBox(width: isSmallScreen ? 12 : 16),
                           _buildFlexibleStat(
+                            context: context,
                             value: '$weeklyAttended/${subject.weeklyGoal}',
                             label: 'Weekly',
                             color: _getProgressColor(weeklyProgress),
@@ -1495,6 +1513,7 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   Widget _buildFlexibleStat({
+    required BuildContext context,
     required String value,
     required String label,
     required Color color,
@@ -1519,7 +1538,7 @@ class _HomeScreenState extends State<HomeScreen>
             label,
             style: TextStyle(
               fontSize: labelFontSize,
-              color: AppTheme.textTertiary,
+              color: AppTheme.getTextTertiary(context),
               fontWeight: FontWeight.w500,
             ),
             maxLines: 1,

@@ -68,7 +68,7 @@ class _SignupScreenState extends State<SignupScreen> {
           ),
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-            color: AppTheme.textPrimary,
+            color: AppTheme.getTextPrimary(context),
             onPressed: () {
               HapticFeedback.lightImpact();
               Navigator.pop(context);
@@ -108,18 +108,21 @@ class _SignupScreenState extends State<SignupScreen> {
                 const SizedBox(height: 24),
 
                 // Title
-                const Text(
+                Text(
                   'Create Account',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                    color: AppTheme.getTextPrimary(context),
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Sign up to start tracking your attendance',
-                  style: TextStyle(fontSize: 16, color: AppTheme.textSecondary),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.getTextSecondary(context),
+                  ),
                 ),
                 const SizedBox(height: 32),
 
@@ -291,9 +294,11 @@ class _SignupScreenState extends State<SignupScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
+                    Text(
                       'Already have an account? ',
-                      style: TextStyle(color: AppTheme.textSecondary),
+                      style: TextStyle(
+                        color: AppTheme.getTextSecondary(context),
+                      ),
                     ),
                     TextButton(
                       onPressed: () {

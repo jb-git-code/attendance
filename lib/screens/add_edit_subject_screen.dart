@@ -207,13 +207,13 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Text(
                     'Past Attendance',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.textPrimary,
+                      color: AppTheme.getTextPrimary(context),
                     ),
                   ),
                 ),
@@ -245,9 +245,9 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                           child: Text(
                             'The semester started $daysSinceSemesterStart days ago. '
                             'About $gapClasses classes have occurred for this subject.',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 13,
-                              color: AppTheme.textSecondary,
+                              color: AppTheme.getTextSecondary(context),
                               height: 1.4,
                             ),
                           ),
@@ -256,12 +256,12 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
+                  Text(
                     'What percentage of classes did you attend approximately?',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.w500,
-                      color: AppTheme.textPrimary,
+                      color: AppTheme.getTextPrimary(context),
                       height: 1.4,
                     ),
                   ),
@@ -430,7 +430,10 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
         ),
         content: Text(
           'Are you sure you want to delete "${_existingSubject?.name}"? This will also delete all attendance records for this subject.',
-          style: const TextStyle(color: AppTheme.textSecondary, height: 1.4),
+          style: TextStyle(
+            color: AppTheme.getTextSecondary(context),
+            height: 1.4,
+          ),
         ),
         actions: [
           TextButton(
@@ -478,20 +481,20 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.getBackgroundColor(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: Container(
           margin: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: AppTheme.getCardColor(context),
             borderRadius: BorderRadius.circular(AppTheme.radiusMd),
             boxShadow: AppTheme.cardShadow,
           ),
           child: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 18),
-            color: AppTheme.textPrimary,
+            color: AppTheme.getTextPrimary(context),
             onPressed: () {
               HapticFeedback.lightImpact();
               Navigator.pop(context);
@@ -500,8 +503,8 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
         ),
         title: Text(
           isEditing ? 'Edit Subject' : 'Add Subject',
-          style: const TextStyle(
-            color: AppTheme.textPrimary,
+          style: TextStyle(
+            color: AppTheme.getTextPrimary(context),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -510,7 +513,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
             Container(
               margin: const EdgeInsets.only(right: 8),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.getCardColor(context),
                 borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                 boxShadow: AppTheme.cardShadow,
               ),
@@ -536,11 +539,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
             children: [
               // Icon Selection
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                  boxShadow: AppTheme.cardShadow,
-                ),
+                decoration: AppTheme.getCardDecoration(context),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -563,12 +562,12 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
+                          Text(
                             'Select Icon',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                              color: AppTheme.getTextPrimary(context),
                             ),
                           ),
                         ],
@@ -602,20 +601,24 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                                     : null,
                                 color: isSelected
                                     ? null
-                                    : AppTheme.backgroundColor,
+                                    : AppTheme.getSurfaceColor(context),
                                 borderRadius: BorderRadius.circular(
                                   AppTheme.radiusSm,
                                 ),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: AppTheme.dividerColor),
+                                    : Border.all(
+                                        color: AppTheme.getDividerColor(
+                                          context,
+                                        ),
+                                      ),
                               ),
                               child: Icon(
                                 SubjectIcons.icons[index],
                                 size: 24,
                                 color: isSelected
                                     ? Colors.white
-                                    : AppTheme.textSecondary,
+                                    : AppTheme.getTextSecondary(context),
                               ),
                             ),
                           );
@@ -629,11 +632,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
 
               // Subject Details
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                  boxShadow: AppTheme.cardShadow,
-                ),
+                decoration: AppTheme.getCardDecoration(context),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -656,12 +655,12 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
+                          Text(
                             'Subject Details',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                              color: AppTheme.getTextPrimary(context),
                             ),
                           ),
                         ],
@@ -707,11 +706,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
 
               // Class Schedule Days
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                  boxShadow: AppTheme.cardShadow,
-                ),
+                decoration: AppTheme.getCardDecoration(context),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -734,7 +729,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Column(
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -742,14 +737,14 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.textPrimary,
+                                  color: AppTheme.getTextPrimary(context),
                                 ),
                               ),
                               Text(
                                 'Select the days when this class is scheduled',
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppTheme.textSecondary,
+                                  color: AppTheme.getTextSecondary(context),
                                 ),
                               ),
                             ],
@@ -783,13 +778,17 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                                     : null,
                                 color: isSelected
                                     ? null
-                                    : AppTheme.backgroundColor,
+                                    : AppTheme.getSurfaceColor(context),
                                 borderRadius: BorderRadius.circular(
                                   AppTheme.radiusMd,
                                 ),
                                 border: isSelected
                                     ? null
-                                    : Border.all(color: AppTheme.dividerColor),
+                                    : Border.all(
+                                        color: AppTheme.getDividerColor(
+                                          context,
+                                        ),
+                                      ),
                                 boxShadow: isSelected
                                     ? AppTheme.primaryShadow(0.2)
                                     : null,
@@ -802,7 +801,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                                     fontWeight: FontWeight.bold,
                                     color: isSelected
                                         ? Colors.white
-                                        : AppTheme.textSecondary,
+                                        : AppTheme.getTextSecondary(context),
                                   ),
                                 ),
                               ),
@@ -818,11 +817,7 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
 
               // Goals
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusLg),
-                  boxShadow: AppTheme.cardShadow,
-                ),
+                decoration: AppTheme.getCardDecoration(context),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -845,12 +840,12 @@ class _AddEditSubjectScreenState extends State<AddEditSubjectScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
+                          Text(
                             'Attendance Goals',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: AppTheme.textPrimary,
+                              color: AppTheme.getTextPrimary(context),
                             ),
                           ),
                         ],
